@@ -1,0 +1,760 @@
+<% include ../partials/header %>
+<% include ../partials/navbar %>
+
+<style>
+    :root {
+    --pulseSize: 35px;
+    --blue: rgb(255, 0, 0);
+    --transparentBlue: rgba(255, 0, 0, 0.2);
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1.25vh;
+    padding-left: 0.15vh;
+    }
+
+    .pulse {
+    width: var(--pulseSize);
+    height: var(--pulseSize);
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 0 var(--blue);
+    animation: pulsing 2s infinite;
+    transition: all 0.2s;
+    cursor: pointer;
+    }
+
+    .pulse:hover {
+    --blue: rgba(200, 80, 180, 1);
+    --transparentBlue: rgba(200, 80, 180, 0.2);
+    }
+
+    .pulse:active {
+    transform: scale(1.5);
+    }
+
+    .power-switch {
+        --color-invert: #fff;
+        --width: 150px;
+        --height: 150px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        width: var(--width);
+        height: var(--height);
+    }
+
+    .power-switch .button2 {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    .power-switch .button2:after {
+        content: "";
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: radial-gradient(circle closest-side, var(--color-invert), transparent);
+        filter: blur(20px);
+        opacity: 0;
+        transition: opacity 1s ease, transform 1s ease;
+        transform: perspective(1px) translateZ(0);
+        backface-visibility: hidden;
+    }
+
+    .power-switch .button2 .power-on, .power-switch .button2 .power-off {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        z-index: 1;
+        fill: none;
+        stroke: var(--color-invert);
+        stroke-width: 8px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .power-switch .button2 .power-on .line, .power-switch .button2 .power-off .line {
+        opacity: 0.2;
+    }
+
+    .power-switch .button2 .power-on .circle, .power-switch .button2 .power-off .circle {
+        opacity: 0.2;
+        transform: rotate(-58deg);
+        transform-origin: center 80px;
+        stroke-dasharray: 220;
+        stroke-dashoffset: 40;
+    }
+
+    .power-switch .button2 .power-on {
+        filter: drop-shadow(0px 0px 6px rgba(255, 255, 255, .8));
+    }
+
+    .power-switch .button2 .power-on .line {
+        opacity: 0;
+        transition: opacity 0.3s ease 1s;
+    }
+
+    .power-switch .button2 .power-on .circle {
+        opacity: 1;
+        stroke-dashoffset: 220;
+        transition: transform 0s ease, stroke-dashoffset 1s ease 0s;
+    }
+
+    .power-switch input {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        z-index: 2;
+        cursor: pointer;
+        opacity: 0;
+    }
+
+    .power-switch input:checked + .button2:after {
+        opacity: 0.15;
+        transform: scale(2) perspective(1px) translateZ(0);
+        backface-visibility: hidden;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .power-switch input:checked + .button2 .power-on, .power-switch input:checked + .button2 .power-off {
+        animation: click-animation 0.3s ease forwards;
+        transform: scale(1);
+    }
+
+    .power-switch input:checked + .button2 .power-on .line, .power-switch input:checked + .button2 .power-off .line {
+        animation: line-animation 0.8s ease-in forwards;
+    }
+
+    .power-switch input:checked + .button2 .power-on .circle, .power-switch input:checked + .button2 .power-off .circle {
+        transform: rotate(302deg);
+    }
+
+    .power-switch input:checked + .button2 .power-on .line {
+        opacity: 1;
+        transition: opacity 0.05s ease-in 0.55s;
+    }
+
+    .power-switch input:checked + .button2 .power-on .circle {
+        transform: rotate(302deg);
+        stroke-dashoffset: 40;
+        transition: transform 0.4s ease 0.2s, stroke-dashoffset 0.4s ease 0.2s;
+    }
+
+    .toastify {
+        padding: 12px 20px;
+        color: #ffffff;
+        display: inline-block;
+        box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12), 0 10px 36px -4px rgba(77, 96, 232, 0.3);
+        background: -webkit-linear-gradient(315deg, #73a5ff, #5477f5);
+        background: linear-gradient(135deg, #73a5ff, #5477f5);
+        position: fixed;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+        border-radius: 2px;
+        cursor: pointer;
+        text-decoration: none;
+        max-width: calc(50% - 20px);
+        z-index: 2147483647;
+    }
+
+    .toastify.on {
+        opacity: 1;
+    }
+
+    .toast-close {
+        opacity: 0.4;
+        padding: 0 5px;
+    }
+
+    .toastify-right {
+        right: 15px;
+    }
+
+    .toastify-left {
+        left: 15px;
+    }
+
+    .toastify-top {
+        top: -150px;
+    }
+
+    .toastify-bottom {
+        bottom: -150px;
+    }
+
+    .toastify-rounded {
+        border-radius: 25px;
+    }
+
+    .toastify-avatar {
+        width: 1.5em;
+        height: 1.5em;
+        margin: -7px 5px;
+        border-radius: 2px;
+    }
+
+    .toastify-center {
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        max-width: fit-content;
+        max-width: -moz-fit-content;
+    }
+
+    @media only screen and (max-width: 360px) {
+        .toastify-right, .toastify-left {
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            max-width: fit-content;
+        }
+    }
+
+    @-webkit-keyframes fadein {
+        from {bottom: 0; opacity: 0;} 
+        to {bottom: 30px; opacity: 1;}
+    }
+
+    @keyframes fadein {
+        from {bottom: 0; opacity: 0;}
+        to {bottom: 30px; opacity: 1;}
+    }
+
+    @-webkit-keyframes expand {
+        from {min-width: 50px} 
+        to {min-width: 350px}
+    }
+
+    @keyframes expand {
+        from {min-width: 50px}
+        to {min-width: 350px}
+    }
+
+    @-webkit-keyframes stay {
+        from {min-width: 350px} 
+        to {min-width: 350px}
+    }
+
+    @keyframes stay {
+        from {min-width: 350px}
+        to {min-width: 350px}
+    }
+
+    @-webkit-keyframes shrink {
+        from {min-width: 350px;} 
+        to {min-width: 50px;}
+    }
+
+    @keyframes shrink {
+        from {min-width: 350px;} 
+        to {min-width: 50px;}
+    }
+
+    @-webkit-keyframes fadeout {
+        from {bottom: 30px; opacity: 1;} 
+        to {bottom: 60px; opacity: 0;}
+    }
+
+    @keyframes fadeout {
+        from {bottom: 30px; opacity: 1;}
+        to {bottom: 60px; opacity: 0;}
+    }
+
+    @keyframes pulsing {
+    from {
+        box-shadow: 0 0 0 0 var(--blue);
+    }
+    70% {
+        box-shadow: 0 0 0 var(--pulseSize) var(--transparentBlue);
+    }
+    to {
+        box-shadow: 0 0 0 0 var(--transparentBlue);
+    }
+    }
+
+    @keyframes line-animation {
+        0% {
+            transform: translateY(0);
+        }
+        10% {
+            transform: translateY(10px);
+        }
+        40% {
+            transform: translateY(-25px);
+        }
+        60% {
+            transform: translateY(-25px);
+        }
+        85% {
+            transform: translateY(10px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    @keyframes click-animation {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
+
+<div class="main">
+    <div class="inner">
+        <h1>Server Admin Console</h1><hr />
+        <table class="table hidden" id="dataTable"></table>
+        <table class="table hidden" id="dataTable2"></table>
+        <table class="table hidden" id="dataTable3"></table>
+        <div id="update" class="power-switch" onclick="toggle()">
+            <input type="checkbox" />
+            <div class="button2">
+            <svg class="power-on">
+                <use xlink:href="#line" class="line" />
+                <use xlink:href="#circle" class="circle" />
+            </svg>
+            <div class="center">
+                <div id="loader" class="pulse"></div>
+            </div>
+            <svg class="power-off">
+                <use xlink:href="#line" class="line" />
+                <use xlink:href="#circle" class="circle" />
+            </svg>
+            </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150" id="line">
+            <line x1="75" y1="34" x2="75" y2="58"/>
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150" id="circle">
+            <circle cx="75" cy="80" r="35"/>
+            </symbol>
+        </svg>  
+        <p>
+            <table class="hidden" id="data"></table>
+        </p>
+        <canvas class="hidden" style="pointer-events:none;" id="myChart"></canvas>
+        <canvas class="hidden" height="160vmax" style="pointer-events:none;" id="myChart2"></canvas>
+        <canvas class="hidden" height="180vmax" style="pointer-events:none;" id="myChart3"></canvas>
+        <ul class="actions fit">
+            <li><button class="button fit" onclick = "serverClose();">Stop Server Instance</button></li>
+            <li><button class="button fit" onclick = "shutDown();">Shut Down Server</button></li>
+        </ul>
+        <input id="key" type="password">
+    </div>
+</div>
+<script src="/public/assets/js/toast.js"></script>
+<script src="/public/assets/js/chart.js"></script>
+<script>
+    var close = new XMLHttpRequest
+    var shut = new XMLHttpRequest
+    var data = new XMLHttpRequest
+    data.open("GET", "/data")
+    data.send()
+
+    function toast(message, cross, type, url) {
+        if (type === "success") { var color = "#7cc20c"; var image = "/public/images/correct.svg" }
+        if (type === "warn") { var color = "#e0a016"; var image = "/public/images/alert.svg" }
+        if (type === "incorrect") { var color = "#ff0000"; var image = "/public/images/wrong.svg" }
+        if (type === "info") { var color = "#7cc20c"; var image = "/public/images/animation.gif" }    
+        if (type !== "input") {
+            Toastify({
+                text: "<img width='32' height='32' src='" + image + "'" + "> " + message,
+                duration: 3000,
+                close: cross,
+                destination: url,
+                newWindow: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: color
+            }).showToast();
+        } else {
+            Toastify({
+                text: message + "<input id='toast-input' type='text'><br><button onclick='makeCookie(name, document.getElementById('toast-input').value)'>",
+                duration: -1,
+                close: cross,
+                destination: url,
+                newWindow: true,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: color
+            }).showToast();
+        }
+    }
+ 
+    function getCookie(name) {
+        var dc = document.cookie;
+        var prefix = name + "=";
+        var begin = dc.indexOf("; " + prefix);
+        if (begin == -1) {
+            begin = dc.indexOf(prefix);
+            if (begin != 0) return null;
+        }
+        else {
+            begin += 2;
+            var end = document.cookie.indexOf(";", begin);
+            if (end == -1) { end = dc.length; }
+        }
+        return decodeURI(dc.substring(begin + prefix.length, end));
+    } 
+
+    function makeCookie(name, value) {
+        document.cookie = name + "=" + value
+    }
+
+    var cookie = getCookie("hasVisited");
+    console.log(cookie)
+    if (cookie == null) {
+        var d = new Date();
+        d.setTime(d.getTime() + (30*24*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = "hasVisited=true; expires=" + expires
+        setTimeout(function(){toast("FYI, this means that data is being fetched.", true, "info")}, 1500)
+        setTimeout(function(){toast("What's your name?", true, "input")}, 1500)
+    } else {
+        var name = getCookie("name")
+        console.log(name)
+        if (name !== "null") { setTimeout(function(){toast("Welcome Back, " + name + "!", true, "success")}, 1500) }
+        if (name === "null") { setTimeout(function(){toast("Welcome Back!", true, "success")}, 1500) }
+    }
+
+    function serverClose() {
+        var key = document.getElementById("key").value
+        console.log(key)
+        close.open("GET", "/serverClose?key=" + key)
+        close.send()
+    }
+    
+    function shutDown() {
+        var key = document.getElementById("key").value
+        console.log(key)
+        shut.open("GET", "/shutDown?key=" + key)
+        shut.send()
+    }
+
+    close.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText === "Recieved!") {
+                toast("Server has recieved the message. The site will shut down after 15 seconds!", true, "success")
+            } else if (this.responseText !== "Recieved!") {
+                toast("Server has recieved the message. However, the confirmation message was not recieved!", true, "warn")
+            }
+        } else if (this.readyState == 4 && this.status == 403) {
+            toast(this.responseText, true, "incorrect")
+        }
+    }
+
+    shut.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText === "Recieved!") {
+                toast("Server has recieved the message. It will shut down in 5 minutes.", true, "success")
+            } else if (this.responseText !== "Recieved!") {
+                toast("Server has recieved the message. However, the confirmation message was not recieved!", true, "warn")
+            }
+        } else if (this.readyState == 4 && this.status == 403) {
+            toast(this.responseText, true, "incorrect")
+        }
+    }
+
+    function toggle() {
+        if (document.getElementById("update").classList.contains("play") === false) {
+            document.getElementById("update").classList.add("play")
+            toast("Continuous Updates Resumed", true, "success")
+            send() 
+        }
+        else {
+            document.getElementById("update").classList.remove("play")
+            toast("Continuous Updates Paused", true, "warn")
+        }
+    }
+
+    function send() {
+        data.open("GET", "/data")
+        data.send()
+        document.getElementById("loader").classList.remove("hidden")
+    }
+
+    //CPU Core Usage Graph Rendering
+    function BuildChart(labels, values, chartTitle) {
+    var canvas = document.getElementById("myChart")
+    canvas.height = window.innerHeight / 1.15
+    canvas.width = window.innerWidth
+    var ctx = canvas.getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: chartTitle,
+                data: values,
+                backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                borderColor: 'rgba(255, 0, 0, 1)',
+                borderWidth: 2
+            }]
+        }, options: {
+            responsive: true,
+            maintainAspectRatio: true, 
+            legend: { display: true },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        color: 'rgba(140, 134, 133, 0.3)',
+                        zeroLineColor: 'rgba(140, 134, 133, 0.3)'
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        color: 'rgba(140, 134, 133, 0.3)',
+                        zeroLineColor: 'rgba(140, 134, 133, 0.3)'
+                    }
+                }]
+            }
+        }
+        });
+        var canvas = document.getElementById("myChart")
+        canvas.getContext('2d').clearRect(-10, -10, canvas.width, canvas.height);
+        canvas.classList.remove("hidden");
+        return myChart;
+    }
+
+    //Initialisation function for core usage graph rendering
+    function metaBuildChart() {
+        var table = document.getElementById('dataTable');
+        var json = [];
+        var headers = [];
+        for (var i = 0; i < table.rows[0].cells.length; i++) {
+            headers[i] = table.rows[0].cells[i].innerHTML.toLowerCase().replace(/ /gi, '');
+        }
+        for (var i = 1; i < table.rows.length; i++) {
+            var tableRow = table.rows[i];
+            var rowData = {};
+            for (var j = 0; j < tableRow.cells.length; j++) {
+                rowData[headers[j]] = tableRow.cells[j].innerHTML;
+            }
+            json.push(rowData);
+        }
+        var labels = json.map(function (e) {
+            return e.coreindex;
+        });
+        var values = json.map(function (e) {
+            return e.usage;
+        });
+        var chart = BuildChart(labels, values, "CPU Usage (in %)");
+    }
+
+    //Clock Speed Graph Rendering
+    function BuildChart2(labels, values, chartTitle) {
+    var canvas = document.getElementById("myChart2")
+    canvas.height = window.innerHeight / 1.15
+    canvas.width = window.innerWidth
+    var ctx = canvas.getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: chartTitle,
+                data: values,
+                backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                borderColor: 'rgba(255, 0, 0, 1)',
+                borderWidth: 2
+            }]
+        }, options: {
+            responsive: true,
+            maintainAspectRatio: true, 
+            legend: { display: true },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 0,
+                        type: 'logarithmic',
+                        stepSize: 1,
+                        callback: function(value, index, values) {
+                            return value + " GHz";
+                        }
+                    },
+                    gridLines: {
+                        color: 'rgba(140, 134, 133, 0.3)',
+                        zeroLineColor: 'rgba(140, 134, 133, 0.3)'
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        color: 'rgba(140, 134, 133, 0.3)',
+                        zeroLineColor: 'rgba(140, 134, 133, 0.3)'
+                    }
+                }]
+            }
+        }
+        });
+        var canvas = document.getElementById("myChart2")
+        canvas.getContext('2d').clearRect(-10, -10, canvas.width, canvas.height);
+        canvas.classList.remove("hidden");
+        return myChart;
+    }
+
+    //Initialisation function for CPU clock speed graph rendering
+    function metaBuildChart2() {
+        var table = document.getElementById('dataTable2');
+        var json = [];
+        var headers = [];
+        for (var i = 0; i < table.rows[0].cells.length; i++) {
+            headers[i] = table.rows[0].cells[i].innerHTML.toLowerCase().replace(/ /gi, '');
+        }
+        for (var i = 1; i < table.rows.length; i++) {
+            var tableRow = table.rows[i];
+            var rowData = {};
+            for (var j = 0; j < tableRow.cells.length; j++) {
+                rowData[headers[j]] = tableRow.cells[j].innerHTML;
+            }
+            json.push(rowData);
+        }
+        var labels = json.map(function (e) {
+            return e.info;
+        });
+        var values = json.map(function (e) {
+            return e.clock;
+        });
+        var chart = BuildChart2(labels, values, "CPU Clock (in GHz)");
+    }
+
+    //RAM Usage Graph Rendering
+    function BuildChart3(labels, values, chartTitle) {
+    var canvas = document.getElementById("myChart3")
+    canvas.height = window.innerHeight / 1.15
+    canvas.width = window.innerWidth
+    var ctx = canvas.getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: chartTitle,
+                data: values,
+                backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                borderColor: 'rgba(255, 0, 0, 1)',
+                borderWidth: 2
+            }]
+        }, options: {
+            responsive: true,
+            maintainAspectRatio: true, 
+            legend: { display: true },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 0,
+                        type: 'logarithmic',
+                        callback: function(value, index, values) {
+                            return value + " GB";
+                        }
+                    },
+                    gridLines: {
+                        color: 'rgba(140, 134, 133, 0.3)',
+                        zeroLineColor: 'rgba(140, 134, 133, 0.3)'
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        color: 'rgba(140, 134, 133, 0.3)',
+                        zeroLineColor: 'rgba(140, 134, 133, 0.3)'
+                    }
+                }]
+            }
+        }
+        });
+        var canvas = document.getElementById("myChart3")
+        canvas.getContext('2d').clearRect(-10, -10, canvas.width, canvas.height);
+        canvas.classList.remove("hidden");
+        return myChart;
+    }
+
+    //Initialisation function for RAM usage graph rendering
+    function metaBuildChart3() {
+        var table = document.getElementById('dataTable3');
+        var json = [];
+        var headers = [];
+        for (var i = 0; i < table.rows[0].cells.length; i++) {
+            headers[i] = table.rows[0].cells[i].innerHTML.toLowerCase().replace(/ /gi, '');
+        }
+        for (var i = 1; i < table.rows.length; i++) {
+            var tableRow = table.rows[i];
+            var rowData = {};
+            for (var j = 0; j < tableRow.cells.length; j++) {
+                rowData[headers[j]] = tableRow.cells[j].innerHTML;
+            }
+            json.push(rowData);
+        }
+        var labels = json.map(function (e) {
+            return e.info;
+        });
+        var values = json.map(function (e) {
+            return e.mem;
+        });
+        var chart = BuildChart3(labels, values, "Memory Used (in GB)");
+    }
+
+    //Server Response Mutation
+    data.onreadystatechange = function() {
+        if (this.readyState == 4) {
+            response = JSON.parse(this.responseText)
+            console.log(response)
+            coreUsage = response.splice(0, (response.length - 7))
+            coreUsage = "<thead><th>Core Index</th><th>Usage</th></thead><tbody><tr><td>" + coreUsage + "</tr></tbody>"
+            coreUsage = coreUsage.replace(/: /g, "</td><td>")
+            coreUsage = coreUsage.replace(/,/g, "</td></tr><tr><td>")
+            coreUsage = coreUsage.replace(/%/g, "")
+            clock = response.splice(0, 2)
+            clock = "<thead><th>Info</th><th>Clock</th></thead><tbody><tr><td>" + clock.toString().replace(/:/g, "</td><td>") + "</tr></tbody>"
+            clock = clock.replace(/,/g, "</td></tr><tr><td>")
+            document.getElementById('dataTable2').innerHTML = clock
+            memUsage = response.splice((response.length - 2), response.length)
+            memUsage = "<thead><th>Info</th><th>Mem</th></thead><tbody><tr><td>" + memUsage.toString().replace(/:/g, "</td><td>") + "</tr></tbody>"
+            memUsage = memUsage.replace(/,/g, "</td></tr><tr><td>")
+            document.getElementById('dataTable3').innerHTML = memUsage
+            response.length = 3
+            console.log(memUsage)
+            response = response.toString().replace(/,,/, "") 
+            response = "<thead><th>Name</th><th>Information</th></thead><tbody><tr><td>" + response.toString().replace(/,/g, "</td></tr><tr><td>") + "</tr></tbody>"
+            response = response.replace(/:/g, "</td><td>") 
+            document.getElementById("loader").classList.add("hidden")
+            document.getElementById("dataTable").innerHTML = coreUsage
+            document.getElementById("data").innerHTML = response
+            document.getElementById("data").classList.remove("hidden")
+            metaBuildChart()
+            metaBuildChart2()
+            metaBuildChart3()
+            if (document.getElementById("update").classList.contains("play") === true) {
+                data.open("GET", "/data")
+                data.send()
+                document.getElementById("loader").classList.remove("hidden")
+            }
+    }}
+</script>
+
+<% include ../partials/footer %>

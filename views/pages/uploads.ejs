@@ -1,0 +1,76 @@
+<% include ../partials/header %>
+<% include ../partials/navbar %>
+
+<style>
+  :root {
+    --pulseSize: 35px;
+    --blue: rgb(255, 0, 0);
+    --transparentBlue: rgba(255, 0, 0, 0.2);
+  }
+  
+  .center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1.25vh;
+  padding-left: 0.15vh;
+  }
+
+  .pulse {
+    width: var(--pulseSize);
+    height: var(--pulseSize);
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 0 var(--blue);
+    animation: pulsing 2s infinite;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .pulse:hover {
+    --blue: rgba(200, 80, 180, 1);
+    --transparentBlue: rgba(200, 80, 180, 0.2);
+  }
+
+  .pulse:active {
+    transform: scale(1.5);
+  }
+
+  @keyframes pulsing {
+    from {
+        box-shadow: 0 0 0 0 var(--blue);
+    }
+    70% {
+        box-shadow: 0 0 0 var(--pulseSize) var(--transparentBlue);
+    }
+    to {
+        box-shadow: 0 0 0 0 var(--transparentBlue);
+    }
+  }
+</style>
+
+<div class="main">
+  <div class="inner">
+    <h1>Select a file to upload</h1>
+    <ul class="actions fit">
+      <li><button class="button fit upload-btn" type="button">Upload File</button></li>
+      <li><button class="button fit upload-btn-2" type="button">Upload Folder</button></li>
+    </ul>
+    <progress class="hidden" id="progress-bar" max="100"></progress>
+    <h2 class="hidden center" id="status"></h2>
+    <h2 class="hidden center" id="loaded_n_total"></h2>
+    <div class="center">
+      <div id = "loading" class="pulse hidden"></div>
+  </div>
+  </div>  
+</div>
+
+<input class="hidden" id="upload-input" type="file" name="uploads[]" multiple="multiple">
+<input class="hidden" id="test" type="file" onchange="zipFiles(this, event)" multiple="multiple" webkitdirectory />
+
+<script src="/public/assets/js/jquery.min.js"></script>
+<script src="/public/assets/js/zip.js"></script>
+<script src="/public/assets/js/upload.js"></script>
+
+
+<% include ../partials/footer %>

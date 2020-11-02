@@ -1,0 +1,44 @@
+<% include ../partials/header %>
+<% include ../partials/navbar %>
+
+<head>
+    <title>Print Server</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="/public/assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="/public/assets/css/noscript.css" /></noscript>
+</head>
+<div id = "main">
+    <div class = "inner">
+        <header>
+            <h1>Hey there!<br> Welcome to a good - looking web interface for a dumb printer</h1>
+        </header>
+        <p>
+        <form id="upload_form" enctype="multipart/form-data" method="post">
+            <label id = "uploadButton" class="icon fa-upload button fit">
+            Upload A File
+            <input style="display: none;" type="file" name="file" id="file" onchange="uploadFile()">
+            </label>
+            <progress class="hidden" id="progressBar" value="0" max="100"></progress>
+            <h2 style="text-align: center; font-size: xx-large;" id="status"></h2>
+            <h2 style="text-align: center; font-size: larger;" id="loaded_n_total"></h2>
+        </form>
+        <ul class=" actions fit">
+        <li><button id="printButton" class="button fit" onclick = "fileName()">Print</button></li>
+        <li><button id="currButton" class="button fit" onclick = "getCurrentJobs();">View Current Jobs</button></li>
+        </ul>
+        <ul class="actions fit">
+        <li><button class="button fit" onclick = "cancelAll();">Cancel All Jobs</button></li>
+        <li><button class="button fit" onclick = "cancelOne();">Cancel A Single Job</button></li>
+        </ul>
+        </p>
+        <table id = "serverResponse"></table>
+        <header>
+            <h1 id = "null" style = "text-align: center;"></h1>
+        </header>
+    </div>
+</div>
+
+<script src="/public/assets/js/print.js" defer></script>
+
+<% include ../partials/footer %>

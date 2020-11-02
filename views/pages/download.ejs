@@ -1,0 +1,38 @@
+<% include ../partials/header %>
+<% include ../partials/navbar %>
+
+
+<head>
+    <title>Downloads</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="/public/assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="/public/assets/css/noscript.css" /></noscript>
+</head>
+<div id = "main">
+    <div class = "inner">
+        <header>
+            <h1>Select the files you want to download</h1>
+        </header>
+        <table id = "serverResponse"></table>
+        <header>
+            <h1 id = "null" style = "text-align: center;"></h1>
+        </header>
+    </div>
+</div>
+
+<script>
+    var xhttp = new XMLHttpRequest
+    xhttp.open("POST", "/listFiles")
+    xhttp.send()
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4) {
+            if (this.responseText.includes("<tr>") === true) {
+            document.getElementById("serverResponse").innerHTML = this.responseText
+            } else if (this.responseText.includes("<tr>") === false) {
+                document.getElementById("null").innerHTML = "No files present in working directory!"
+            }
+    }}
+</script>
+
+<% include ../partials/footer %>

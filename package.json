@@ -1,0 +1,22 @@
+{
+  "name": "hyve",
+  "version": "1.0.0",
+  "description": "My First Full Stack Production Ready Website",
+  "main": "app.js",
+  "scripts": {
+    "build": "node app.js",
+    "init": "nodemon app.js"
+  },
+  "author": "Nilanjan Mitra",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "formidable": "^1.2.2",
+    "fs": "0.0.1-security"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

@@ -1,0 +1,77 @@
+<% include ../partials/header %>
+<% include ../partials/navbar %>
+
+<div id="main">
+    <div class="inner">
+        <header>
+            <span style="float: right;">
+                <img style="border-radius: 50%;vertical-align: middle;" src="/public/users/<%= image %>" width="64px" height="64px">
+            </span>
+            <div style="background-image: linear-gradient(to right, red, rgb(156, 10, 156), rgb(209, 70, 214), rgb(212, 130, 223)); -webkit-text-fill-color: transparent; -webkit-background-clip: text;">
+            <a>
+                <h1>Welcome to Hyve<%= name.replace(/user.svg/g, "" ) %>!
+                </h1>
+            </a>
+            </div>
+        </header>
+        <section class="tiles">
+            <article class="style2">
+                <span class="image">
+                    <img src="/public/images/pic01.jpg" alt="" />
+                </span>
+                <a href="/generic">
+                    <h2><img src = "../../public/images/media_server.svg" width="200px" height="200px"></h2>
+                    <div class="content">
+                        <p>Watch movies on the Mitra's Media Server</p>
+                    </div>
+                </a>
+            </article>
+            <article class="style6">
+                <span class="image">
+                    <img src="/public/images/pic02.jpg" alt="" />
+                </span>
+                <a href="/print">
+                    <h2><img src = "../../public/images/printer_icon.svg" width="200px" height="200px"></h2>
+                    <div class="content">
+                        <p>Print documents from a web interface<br>Making dumb &#x1F5A8;&#xFE0F; smart</p>
+                    </div>
+                </a>
+            </article>
+            <article class="style3">
+                <span class="image">
+                    <img src="/public/images/pic03.jpg" alt="" />
+                </span>
+                <a href="/dashboard">
+                    <h2><img src = "../../public/images/AMD.svg" width="200px" height="200px"></h2>
+                    <div class="content">
+                        <p>Dashboard for the server running this website.</p>
+                    </div>
+                </a>
+            </article>
+            <article class="style1">
+                <span class="image">
+                    <img src="/public/images/pic04.jpg" alt="" />
+                </span>
+                <a href="/uploads">
+                    <h2><img src = "../../public/images/upload.svg" width="200px" height="200px"></h2>
+                    <div class="content">
+                        <p>Upload a file to the Mitra's Media Server</p>
+                    </div>
+                </a>
+            </article>
+            <article class="style5">
+                <span class="image">
+                    <img src="public/images/pic05.jpg" alt="" />
+                </span>
+                <a href="/downloads">
+                    <h2><img src = "../../public/images/download.svg" width="200px" height="200px"></h2>
+                    <div class="content">
+                        <p>Download a file to the Mitra's Media Server</p>
+                    </div>
+                </a>
+            </article>
+        </section>
+    </div>
+</div>
+
+<% include ../partials/footer %>
