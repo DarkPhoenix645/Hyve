@@ -6,7 +6,7 @@ Development of this project was initially for the sole purpose of making my life
 ## Should you use it?
 #### ONLY IF YOU KNOW HOW TO TROUBLESHOOT JAVASCRIPT CODE!!! 
 This is so because of the fact that this project is highly integrated into my home's configuration and I decided to make this repository public in order to suppot the open source movement. I have tried my best to make this as modular as possible, but even then you should use it only if you are intrigued by my project (which is highly unlikely). 
-At the cost of repeating myself, I should remind you that this is a personal project and no a professional one; also many of the technologies I have used, I'm using them for the first time. 
+At the cost of repeating myself, I should remind you that this is a personal project and not a professional one; also many of the technologies I have used, I'm using them for the first time. 
 #### TL;DR : This is not a polished app, use it at your own risk.
 
 ## Installation
