@@ -1,5 +1,4 @@
 # Hyve
-## What is Hyve?
 Hyve is a messaging service, cloud storage, management iinterface for a server and a print server with a slick looking web interface all rooled up into one.  
 Development of this project was initially for the sole purpose of making my life easier, but as I started making more of time for this particular project of mine, I realised that it can also be a good learning opportunity for me. As a result, you will see not a lot, but still a considerable amount of web frameworks and technologies being used here, all of which are connected in some manner or other.
 
