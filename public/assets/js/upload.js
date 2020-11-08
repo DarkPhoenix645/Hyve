@@ -1,3 +1,16 @@
+function convertBytes(input) {
+  if (input <  999999) {
+      input = input /  1000
+      return(input.toFixed(2) + " KB ")
+  } else if (input <  999999999 && input > 999999) {
+      input = input /  1000000
+      return(input.toFixed(2) + " MB ")
+  } else if (input <  999999999999 && input > 999999999) {
+      input = input /  1000000000
+      return(input.toFixed(2) + " GB ")
+  }
+}
+
 function zipFiles(dom, e){
     let zip = new JSZip();
     var files = e.target.files
@@ -20,16 +33,16 @@ function zipFiles(dom, e){
         processData: false,
         contentType: false,
         success: function(data){
-            console.log('upload successful!\n' + data);
+            console.log('Upload successful!\n' + data);
         },
         xhr: function() {
           var xhr = new XMLHttpRequest();
           xhr.upload.addEventListener('progress', function(evt) {
             if (evt.lengthComputable) {
-                console.log("cwce")
+                console.log("Length Is computable!")
               var percentComplete = evt.loaded / evt.total;
               percentComplete = parseInt(percentComplete * 100);
-              $('.progress-bar').text(percentComplete + '%');
+              $('.progress-bar').text(`${percentComplete}% uploaded`);
               $('.progress-bar').width(percentComplete + '%');
               if (percentComplete === 100) {
                 $('.progress-bar').html('Done');
@@ -82,11 +95,11 @@ function zipFiles(dom, e){
               $("#progress-bar").removeClass("hidden")
               $("#status").removeClass("hidden")
               $("#loaded_n_total").removeClass("hidden")
-              $('#status').html(percentComplete + '%');
-              $('#loaded_n_total').html(evt.loaded + ' completed out of ' + evt.total);
+              $('#status').html(percentComplete + '% uploaded');
+              $('#loaded_n_total').html(convertBytes(evt.loaded) + ' completed out of ' + convertBytes(evt.total));
               $('#progress-bar').val(percentComplete);
             } else {
-                console.log("else block entered")
+                console.log("Else block entered")
                 do {
                     document.getElementById("loading").classList.remove("hidden")
                     $("#status").html("Uploading...")
