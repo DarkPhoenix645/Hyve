@@ -79,7 +79,7 @@ module.exports = function(app) {
             res.send(files)
         } else if (files.length !== 0) {
         files.forEach((item, index) => {
-        arr = []
+        var arr = []
         fs.stat(process.env.UPLOADS_DIR1 + "/" + item, function(err, stats) {
             if (stats.isFile() === false) {
                 arr.push("link:/downloadDir?files=" + item.replace(/ /g, "%20") + "filename:" + item + "Size:------------" + "BirthTime:" + stats.birthtime)

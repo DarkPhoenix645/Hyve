@@ -17,6 +17,6 @@
     "fs": "0.0.1-security"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.6"
   }
 }
