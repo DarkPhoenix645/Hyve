@@ -74,17 +74,17 @@ module.exports = {
         })
     },
 
-    convertBytes: (input) => {
+    convertBytes: (input, humanReadable) => {
         return new Promise((resolve) => {
-            if (input <  999999) {
+            if (input < 999999) {
                 input = input /  1000
-                resolve(input.toFixed(2))
-            } else if (input <  999999999 && input > 999999) {
+                humanReadable === true ? resolve(input.toFixed(2) + " KB") : resolve(input.toFixed(2))
+            } else if (input < 999999999 && input > 999999) {
                 input = input /  1000000
-                resolve(input.toFixed(2))
-            } else if (input <  999999999999 && input > 999999999) {
+                humanReadable === true ? resolve(input.toFixed(2) + " MB") : resolve(input.toFixed(2))
+            } else if (input < 999999999999 && input > 999999999) {
                 input = input /  1000000000
-                resolve(input.toFixed(2))
+                humanReadable === true ? resolve(input.toFixed(2) + " GB") : resolve(input.toFixed(2))
             }
         })
     },

@@ -60,46 +60,26 @@ module.exports = function(app) {
         }
     })
 
-    app.get('/downloadDir', async(req, res) => {
+    app.get('/api/download', async(req, res) => {
         functions.getDateTime(req.ip, req.url, req.method) 
-        if (req.query.files.includes("..;..") === true) {
-            var files = "uploads/" + req.query.files.replace(/..;..|%20/g, " uploads/")
-            fileName = await(functions.download(files, Date.now()))
-            res.download("/home/nilanjan/Desktop/Hyve/downloads/" + fileName)
-        } else {
-            fileName = await(functions.download(req.query.files, Date.now()))
-            res.download("/home/nilanjan/Desktop/Hyve/downloads/" + fileName)
+        if (req.query.folder) {
+            var folder = req.query.folder
+            if (folder.includes("..;..") === true) {
+                var folders = req.query.files.replace(/..;..|%20/g, " ")
+                var outputZip = await(functions.zip(folders, Date.now()))
+                outputZip === "Error!" ? res.send("Error!") : res.download(outputZip)
+            } else {
+                outputZip = await(functions.zip(folder, Date.now()))
+                outputZip === "Error!" ? res.send("Error!") : res.download(outputZip)
+            }
         }
     })
 
-    app.post('/listFiles', async(req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method) 
+    app.get('/api/listFiles', async(req, res) => {
+        functions.getDateTime(req.ip, req.url, req.method)
         var files = await fs.readdirSync(process.env.UPLOADS_DIR1)
-        if (files.length === 0) {
-            res.send(files)
-        } else if (files.length !== 0) {
-        files.forEach((item, index) => {
-        var arr = []
-        fs.stat(process.env.UPLOADS_DIR1 + "/" + item, function(err, stats) {
-            if (stats.isFile() === false) {
-                arr.push("link:/downloadDir?files=" + item.replace(/ /g, "%20") + "filename:" + item + "Size:------------" + "BirthTime:" + stats.birthtime)
-            } else if (stats.isFile() === true) {
-                arr.push("link:/downloadFiles?files=" + item.replace(/ /g, "%20") + "filename:" + item + "Size:" + functions.convertBytes(stats.size) + "BirthTime:" + stats.birthtime)
-            } else if (err) {console.log(err)}
-            if (index === (files.length - 1)) {
-                arr = "[" + arr.toString()
-                var x = arr.replace(/ \(India Standard Time\)/g, "")
-                x = x.replace(/\[/, "<tr><th>Name</th><th>Size</th><th>Creation Time</th></tr>")
-                x = x.replace(/link:/g, "<tr><td><a href=\"")
-                x = x.replace(/filename:/g, "\">")
-                x = x.replace(/Size:/g, "</td><td>")
-                x = x.replace(/BirthTime:/g, "</td><td>")
-                x = x.replace(/,/g, "</td></tr>")
-                x = x + "</td></tr>"
-                res.send(x)
-            } 
-        })
-    })}
+        var output = await functions.processData(files)
+        res.send(output)
     })
 
     app.post('/uploadFile', async function(req, res){

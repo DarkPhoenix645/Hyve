@@ -28,7 +28,7 @@
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4) {
             if (this.responseText.includes("<tr>") === true) {
-            document.getElementById("serverResponse").innerHTML = this.responseText
+                document.getElementById("serverResponse").innerHTML = this.responseText
             } else if (this.responseText.includes("<tr>") === false) {
                 document.getElementById("null").innerHTML = "No files present in working directory!"
             }

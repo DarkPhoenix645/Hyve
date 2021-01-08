@@ -1,10 +1,13 @@
 require('dotenv').config()
 const { exec } = require('child_process');
+const { promisify } = require('util');
 const os = require('os');
 const fs = require('fs');
 const port = 8080;
 const functions = require("./print")
 var memArr = []
+var public_ip = ""
+var local_ip = ""
 
 function convert(fileName) {
     exec("soffice --convert-to pdf " + fileName + " --outdir " + __dirname + "/uploads", (error, stdout, stderr) => {
@@ -16,6 +19,45 @@ function convert(fileName) {
         functions.printFunction("/" + stdout)
     })
 }
+
+function ip() {
+    return new Promise(resolve => {
+        var arr = []
+        exec(process.env.SERVER_LOG_LOCAL_IP, (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`An error occured : ${stderr}`);
+                return;
+            }
+            stdout = `${stdout}`;
+            stdout = stdout.replace(/(\r\n|\n|\r)/gm,"");
+            stdout = stdout.replace(" ", "");
+            local_ip = "http://" + stdout + ':' + port
+            arr.push(local_ip)
+        });
+        
+        exec(process.env.SERVER_LOG_PUBLIC_IP, (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`An error occured : ${stderr}`);
+                return;
+            }
+            stdout = `${stdout}`;
+            stdout = stdout.replace(/(\r\n|\n|\r)/gm,"");
+            stdout = stdout.replace(" ","")
+            public_ip = "http://" + stdout + ':' + port
+            arr.push(public_ip)
+            resolve(arr)
+        });
+    })
+} 
+
 
 module.exports = {
     getDateTime: (ip, url, method) => {
@@ -88,11 +130,12 @@ module.exports = {
         })
     },
 
-    download: async(files, date) => {
+    zip: async(files, date) => {
         return new Promise((resolve) => {
-            exec("cd " + process.env.UPLOADS_DIR1 + " && " + process.env.ZIP_EXEC + " " + process.env.DOWNLOADS_DIR + date + ".zip " + process.env.UPLOADS_DIR1 + files + " -r", (error, stdout, stderr) => {
-                if (error) {console.log(`${error}`)} else if (stderr) {console.log(`${stderr}`)}
-                resolve("Hyve-" + date + ".zip");
+            exec(`cd uploads && zip "${process.env.DOWNLOADS_DIR}${date}.zip" "${files}" -r`, (error, stdout, stderr) => {
+                if (error) { resolve("Error!") }
+                else if (stderr) { resolve("Error!") }
+                else if (stdout) { resolve(`${process.env.DOWNLOADS_DIR}${date}.zip`); }
             })
         })
     },
@@ -108,6 +151,37 @@ module.exports = {
             input = input /  1000000000
             return(input.toFixed(2) + " GB ")
         }
+    },
+
+    processData: (files) => {
+        return new Promise((resolve) => {
+        var data = { totalItems:"", files:{}, folders:{} }
+        var buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
+        var counter = 0
+        data.totalItems = files.length
+        files.forEach((item, index) => {
+            fs.stat(process.env.UPLOADS_DIR1 +  item, async function(err, stats) {
+                if (stats.isFile() === false) {
+                    counter += 1
+                    buffer.name = item 
+                    buffer.birthTime = stats.birthtime.toString()
+                    buffer.size = await functions.convertBytes(stats.size, true)
+                    buffer.downloadLink = public_ip + "/api/download?folder=" + encodeURI(item)
+                    data.folders[item] = buffer
+                    buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
+                } else if (stats.isFile() === true) {
+                    counter += 1
+                    buffer.name = item 
+                    buffer.birthTime = stats.birthtime.toString()
+                    buffer.size = await functions.convertBytes(stats.size, true)
+                    buffer.downloadLink = public_ip + "/api/download?file=" + encodeURI(item)
+                    data.files[item] = buffer
+                    buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
+                } else if (err) {console.log(err)}
+                if (counter === files.length) {resolve(data)}
+            })
+        })
+    })
     },
 
     getCPU: async() => {
@@ -153,35 +227,9 @@ module.exports = {
         });
     },
     
-    serverLogging : () => {
-        exec(process.env.SERVER_LOG_LOCAL_IP, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`An error occured : ${stderr}`);
-                return;
-            }
-            stdout = `${stdout}`;
-            stdout = stdout.replace(/(\r\n|\n|\r)/gm,"");
-            stdout = stdout.replace(" ", "");
-            console.log('Server running at http://' + stdout + ':' + port)
-        });
-        
-        exec(process.env.SERVER_LOG_PUBLIC_IP, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`An error occured : ${stderr}`);
-                return;
-            }
-            stdout = `${stdout}`;
-            stdout = stdout.replace(/(\r\n|\n|\r)/gm,"");
-            stdout = stdout.replace(" ","")
-            console.log('Server also running at http://' + stdout + ':' + port)
-        });
+    serverLogging : async() => {
+        var ip_arr = await ip()
+        console.log("Server running at", ip_arr[0])
+        console.log("Server also running at", ip_arr[1])
     }
 }

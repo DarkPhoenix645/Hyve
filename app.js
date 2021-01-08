@@ -5,7 +5,7 @@ const functions = require("./functions")
 const app = express();
 const port = 8080;
 
-app.use('/public', express.static(process.cwd() + '/public'));
+app.use('/public', express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 functions.serverLogging()
 

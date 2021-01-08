@@ -21,7 +21,6 @@ function usagePercent(opts, cb) {
   var cpu0;
   var time;
 
-  //opts is optional (for function - like usage {you know, like this} )
   if (typeof opts === 'function') {
     cb = opts;
     opts = {
