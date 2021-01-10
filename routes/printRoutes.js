@@ -3,8 +3,6 @@ const functions = require("../functions");
 const formidable = require("formidable");
 const fs = require("fs");
 const { exec } = require("child_process");
-const util = require("util");
-var nameChanger = util.promisify(fs.rename)
 
 module.exports = function(app) {
     app.post('/printFile', (req, res) => {
@@ -33,44 +31,31 @@ module.exports = function(app) {
         res.status(200).send(currentJobs);
     });
 
-    app.get('/downloadFiles', async(req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method) 
-        if (req.query.files.includes("..;..") === true) {
-            var files = "uploads/" + req.query.files.replace(/..;..|%20/g, " uploads/")
-            fileName = await(functions.download(files, Date.now()))
-            try {
-                res.download(process.env.UPLOADS_DIR1 + fileName)
-            } catch (err) {
-                try {
-                    res.download(process.env.UPLOADS_DIR2 + fileName)
-                } catch (err) {
-                    res.download(process.env.UPLOADS_DIR3 + fileName)
-                }
-            }
-        } else {
-            try {
-                res.download(process.env.UPLOADS_DIR1 + req.query.files)
-            } catch (err) {
-                try {
-                    res.download(process.env.UPLOADS_DIR2 + req.query.files)
-                } catch (err) {
-                    res.download(process.env.UPLOADS_DIR3 + req.query.files)
-                }
-            }
-        }
-    })
-
     app.get('/api/download', async(req, res) => {
         functions.getDateTime(req.ip, req.url, req.method) 
         if (req.query.folder) {
-            var folder = req.query.folder
-            if (folder.includes("..;..") === true) {
-                var folders = req.query.files.replace(/..;..|%20/g, " ")
-                var outputZip = await(functions.zip(folders, Date.now()))
-                outputZip === "Error!" ? res.send("Error!") : res.download(outputZip)
+            var query = req.query.folder
+            if (query.includes("..;..") === true) {
+                var folders = query.replace(/..;..|%20/g, '" "')
+                var outputZip = await functions.zip(folders, Date.now())
+                outputZip === "Error!" ? res.status(500).send("Error!") : res.status(200).download(outputZip)
             } else {
-                outputZip = await(functions.zip(folder, Date.now()))
-                outputZip === "Error!" ? res.send("Error!") : res.download(outputZip)
+                if (fs.existsSync(process.env.UPLOADS_DIR1 + query)) {
+                    outputZip = await functions.zip(folder, Date.now())
+                    outputZip === "Error!" ? res.status(500).send("An error occurred while zipping the folder!") : res.status(200).download(outputZip)
+                } else { res.status(404).send("Folder not found!") }
+            }
+        }
+        else if (req.query.file) {
+            var query = req.query.file
+            if (req.query.file.includes("..;..") === true) {
+                var files = query.replace(/..;..|%20/g, '" "')
+                var outputZip = await functions.zip(files, Date.now())
+                outputZip === "Error!" ? res.status(500).send("Error!") : res.status(200).download(outputZip)
+            } else {
+                fs.existsSync(process.env.UPLOADS_DIR1 + query) === true ? 
+                    res.status(200).download(process.env.UPLOADS_DIR1 + query) : 
+                    res.status(404).send("File not found!")
             }
         }
     })
@@ -79,23 +64,31 @@ module.exports = function(app) {
         functions.getDateTime(req.ip, req.url, req.method)
         var files = await fs.readdirSync(process.env.UPLOADS_DIR1)
         var output = await functions.processData(files)
-        res.send(output)
+        res.json(output)
     })
 
-    app.post('/uploadFile', async function(req, res){
+    app.post('/api/upload', async function(req, res){
         functions.getDateTime(req.ip, req.url, req.method)
         var form = new formidable.IncomingForm();
+        var subDir = []
+        var files = []
         form.maxFileSize = 10000 * 1024 * 1024
         form.multiples = true;
-        form.uploadDir = __dirname.replace("/routes", "/uploads/")
-
-        form.on('file', async function(field, file) { nameChanger(file.path, form.uploadDir + file.name); });
+        form.uploadDir = process.env.UPLOADS_DIR1
+        form.on('file', async function(field, file) {
+            var x = file.name.replace(/\/[^\/]+$/,"")
+            if (!subDir.includes(x)) { subDir.push(x) } 
+            files.push(file)
+        });
         form.on('error', function(err) { console.log('An error has occured: ' + err); });
-        form.on('end', function() { res.end('File(s) uploaded and saved!'); });
+        form.on('end', function() { 
+            functions.manageUploads(subDir, files)
+            res.end('File(s) uploaded and saved!'); 
+        });
         form.parse(req);
       });
       
-    app.post('/uploadDir', async function(req, res){
+    app.post('/api/uploadDir', async function(req, res){
         functions.getDateTime(req.ip, req.url, req.method)
         var form = new formidable.IncomingForm();
         form.maxFileSize = 10000 * 1024 * 1024

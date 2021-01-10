@@ -20,6 +20,16 @@ function convert(fileName) {
     })
 }
 
+function mkdir(dir) {
+    fs.mkdirSync(process.env.UPLOADS_DIR1 + dir, (err) => {
+        if (err) { console.log(err) }
+    })
+}
+
+function nameChanger(file) {
+    fs.renameSync(file.path, process.env.UPLOADS_DIR1 + file.name)
+}
+
 function ip() {
     return new Promise(resolve => {
         var arr = []
@@ -128,6 +138,11 @@ module.exports = {
                 resolve(currentJobs);
             })
         })
+    },
+
+    manageUploads: async(subDir, files) => {
+        await subDir.forEach(mkdir)
+        files.forEach(nameChanger)
     },
 
     zip: async(files, date) => {

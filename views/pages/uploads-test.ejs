@@ -1,0 +1,38 @@
+<% include ../partials/header %>
+<% include ../partials/navbar %>
+
+<div class="main">
+  <div class="inner">
+    <h1>Select a file to upload</h1>
+    <ul class="actions fit">
+      <li>
+        <button 
+            class="button fit upload-btn" 
+            id="upload-btn"
+            onclick='input("file")'
+            type="button">Upload File
+        </button>
+      </li>
+      <li>
+        <button 
+            class="button fit upload-btn-2" 
+            id="upload-btn-2" 
+            onclick='input("folder")'
+            type="button">Upload Folder
+        </button>
+      </li>
+    </ul>
+    <div id="readout" class="hidden">
+      <progress id="progress-bar" max="100"></progress>
+      <h2 class="center" id="status"></h2>
+      <h2 class="center" id="loaded_n_total"></h2>
+    </div>
+  </div>  
+</div>
+
+<input id="upload-input-file" type="file" onchange="upload(event)" multiple="multiple">
+<input id="upload-input-folder" type="file" onchange="upload(event)" multiple="multiple" webkitdirectory />
+
+<script src="/public/assets/js/upload-test.js"></script>
+
+<% include ../partials/footer %>
