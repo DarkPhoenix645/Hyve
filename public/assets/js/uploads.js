@@ -25,21 +25,17 @@ if (window.XMLHttpRequest) {
         }
     }
 
-    function upload(event) {
+    function upload(event, type) {
         if (event) {
             var files = event.target.files
             var xhr = new XMLHttpRequest()
             var formData = new FormData()
-            xhr.open("POST", "/api/upload")
-            for (i = 0; i <= files.length; i++) {
-                if (i !== files.length) {
-                    var file = files[i]
-                    formData.append('file' + i, file)
-                }
-                else { console.log("Added files to formData"), console.log(formData.getAll("uploads ")) }
+            xhr.open("POST", "/api/upload?type=" + type)
+            for (i = 0; i < files.length; i++) {
+                var file = files[i]
+                formData.append('file' + i, file)
             }
-            xhr.onprogress = (event) => {
-                console.log(`Uploaded ${event.loaded} of ${event.total} bytes`)
+            xhr.upload.onprogress = (event) => {
                 var percentComplete = event.loaded / event.total;
                 percentComplete = parseInt(percentComplete * 100);
                 document.querySelector("#readout").classList.remove("hidden")
@@ -47,8 +43,11 @@ if (window.XMLHttpRequest) {
                 document.querySelector('#loaded_n_total').innerHTML = convertBytes(event.loaded) + ' completed out of ' + convertBytes(event.total)
                 document.querySelector("#progress-bar").value = percentComplete
             }
+            xhr.onerror = () => { console.error("Upload Failed!") }
+            xhr.onabort = () => { console.error("Upload Cancelled!") }
+            xhr.onabort = () => { console.error("Upload Cancelled!") }
+            xhr.onload = () => { console.log(`Upload Finished!\nServer response: ${xhr.response}`) }
             xhr.send(formData)
         } else {throw "No files/folders passed!"}
     }
 } else { alert("Please use a different browser, yours does not support AJAX!") }
-// document.querySelector("#progress-bar").value = 100

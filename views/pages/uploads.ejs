@@ -5,24 +5,34 @@
   <div class="inner">
     <h1>Select a file to upload</h1>
     <ul class="actions fit">
-      <li><button class="button fit upload-btn" type="button">Upload File</button></li>
-      <li><button class="button fit upload-btn-2" type="button">Upload Folder</button></li>
+      <li>
+        <button 
+            class="button fit upload-btn" 
+            id="upload-btn"
+            onclick='input("file")'
+            type="button">Upload File
+        </button>
+      </li>
+      <li>
+        <button 
+            class="button fit upload-btn-2" 
+            id="upload-btn-2" 
+            onclick='input("folder")'
+            type="button">Upload Folder
+        </button>
+      </li>
     </ul>
-    <progress class="hidden" id="progress-bar" max="100"></progress>
-    <h2 class="hidden center" id="status"></h2>
-    <h2 class="hidden center" id="loaded_n_total"></h2>
-    <div class="center">
-      <div id = "loading" class="pulse hidden"></div>
-  </div>
+    <div id="readout" class="hidden">
+      <progress id="progress-bar" max="100"></progress>
+      <h2 class="center" id="status"></h2>
+      <h2 class="center" id="loaded_n_total"></h2>
+    </div>
   </div>  
 </div>
 
-<input class="hidden" id="upload-input-file" type="file" name="uploads[]" multiple="multiple">
-<input class="hidden" id="upload-input-folder" type="file" onchange="zipFiles(this, event)" multiple="multiple" webkitdirectory />
+<input class="hidden" id="upload-input-file" type="file" onchange="upload(event, 'file')" multiple="multiple">
+<input class="hidden" id="upload-input-folder" type="file" onchange="upload(event, 'folder')" multiple="multiple" webkitdirectory />
 
-<script src="/public/assets/js/jquery.min.js"></script>
-<script src="/public/assets/js/zip.js"></script>
-<script src="/public/assets/js/upload.js"></script>
-
+<script src="/public/assets/js/uploads.js"></script>
 
 <% include ../partials/footer %>

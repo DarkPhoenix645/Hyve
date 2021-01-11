@@ -51,7 +51,7 @@ module.exports = function(app) {
     
     app.get('/uploads', function(req, res) {
         functions.getDateTime(req.ip, req.url, req.method)
-        req.ip === "::1" ? res.render('pages/uploads-test') : res.render('pages/uploads')
+        res.render('pages/uploads')
     });
 
     app.get('/downloads', function(req, res) {

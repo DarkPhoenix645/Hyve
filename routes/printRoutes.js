@@ -60,56 +60,54 @@ module.exports = function(app) {
         }
     })
 
+    app.post('/api/upload', async function(req, res){
+        functions.getDateTime(req.ip, req.url, req.method)
+        if (req.query.type === "folder") {
+            var form = new formidable.IncomingForm();
+            var subDir = []
+            var files = []
+            form.maxFileSize = 10000 * 1024 * 1024
+            form.multiples = true;
+            form.uploadDir = process.env.UPLOADS_DIR1
+            form.on('file', async function(field, file) {
+                var x = file.name.replace(/\/[^\/]+$/,"")
+                if (!subDir.includes(x)) { subDir.push(x) } 
+                files.push(file)
+            });
+            form.on('error', function(err) { 
+                console.log('An error has occured: ' + err); 
+                });
+            form.on('end', function() { 
+                functions.manageUploads(subDir, files)
+                res.end('File(s) uploaded and saved!'); 
+            });
+            form.parse(req);
+        } 
+        else if (req.query.type === "file") {
+            var form = new formidable.IncomingForm();
+            form.maxFileSize = 10000 * 1024 * 1024
+            form.multiples = true;
+            form.uploadDir = process.env.UPLOADS_DIR1
+            form.on('file', async function(field, file) {
+                fs.renameSync(file.path, process.env.UPLOADS_DIR1 + file.name)
+            });
+            form.on('error', function(err) { 
+                console.log('An error has occured: ' + err); 
+            });
+            form.on('end', function() { 
+                res.end('File(s) uploaded and saved!'); 
+            });
+            form.parse(req);
+        }
+    });
+
     app.get('/api/listFiles', async(req, res) => {
         functions.getDateTime(req.ip, req.url, req.method)
         var files = await fs.readdirSync(process.env.UPLOADS_DIR1)
         var output = await functions.processData(files)
         res.json(output)
     })
-
-    app.post('/api/upload', async function(req, res){
-        functions.getDateTime(req.ip, req.url, req.method)
-        var form = new formidable.IncomingForm();
-        var subDir = []
-        var files = []
-        form.maxFileSize = 10000 * 1024 * 1024
-        form.multiples = true;
-        form.uploadDir = process.env.UPLOADS_DIR1
-        form.on('file', async function(field, file) {
-            var x = file.name.replace(/\/[^\/]+$/,"")
-            if (!subDir.includes(x)) { subDir.push(x) } 
-            files.push(file)
-        });
-        form.on('error', function(err) { console.log('An error has occured: ' + err); });
-        form.on('end', function() { 
-            functions.manageUploads(subDir, files)
-            res.end('File(s) uploaded and saved!'); 
-        });
-        form.parse(req);
-      });
       
-    app.post('/api/uploadDir', async function(req, res){
-        functions.getDateTime(req.ip, req.url, req.method)
-        var form = new formidable.IncomingForm();
-        form.maxFileSize = 10000 * 1024 * 1024
-        form.multiples = true;
-        form.uploadDir = __dirname.replace("/routes", "/uploads/")
-        
-        form.on('file', async function(field, file) {
-            nameChanger(file.path, form.uploadDir + file.name);
-            exec("cd " + form.uploadDir + " && unzip '" + form.uploadDir + file.name + "'", (error, stdout, stderr) => {
-                if (error) {console.log(`${error}`)} else if (stderr) {console.log(`${stderr}`)}
-                exec("sudo rm -rf '" + form.uploadDir + file.name + "'", (error, stdout, stderr) => {
-                    if (error) {console.log(`${error}`)} else if (stderr) {console.log(`${stderr}`)}
-                })
-            })
-        });
-        
-        form.on('error', function(err) { console.log('An error has occured: ' + err); });
-        form.on('end', function() { res.end('Folder uploaded and saved!'); });
-        form.parse(req);
-    });
-
     app.get("/data", async(req, res) => {
         var arr = await functions.getCPU()
         arr = arr.filter(item => item)
