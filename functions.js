@@ -172,28 +172,33 @@ module.exports = {
         return new Promise((resolve) => {
         var data = { totalItems:"", files:{}, folders:{} }
         var buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
-        var counter = 0
-        data.totalItems = files.length
+        var fileCounter = 0
+        var dirCounter = 0
         files.forEach((item, index) => {
             fs.stat(process.env.UPLOADS_DIR1 +  item, async function(err, stats) {
                 if (stats.isFile() === false) {
-                    counter += 1
+                    dirCounter += 1
                     buffer.name = item 
                     buffer.birthTime = stats.birthtime.toString()
-                    buffer.size = await functions.convertBytes(stats.size, true)
+                    buffer.size = "-"
                     buffer.downloadLink = public_ip + "/api/download?folder=" + encodeURI(item)
-                    data.folders[item] = buffer
+                    data.folders[dirCounter] = buffer
                     buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
                 } else if (stats.isFile() === true) {
-                    counter += 1
+                    fileCounter += 1
                     buffer.name = item 
                     buffer.birthTime = stats.birthtime.toString()
                     buffer.size = await functions.convertBytes(stats.size, true)
                     buffer.downloadLink = public_ip + "/api/download?file=" + encodeURI(item)
-                    data.files[item] = buffer
+                    data.files[fileCounter] = buffer
                     buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
                 } else if (err) {console.log(err)}
-                if (counter === files.length) {resolve(data)}
+                if (dirCounter + fileCounter === files.length) {
+                    data.totalItems = files.length
+                    data.totalFolders = dirCounter
+                    data.totalFiles = fileCounter
+                    resolve(data)
+                }
             })
         })
     })

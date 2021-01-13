@@ -14,25 +14,14 @@
         <header>
             <h1>Select the files you want to download</h1>
         </header>
-        <table id = "serverResponse"></table>
+        <table id="serverResponse"></table>
+        <pre id="json">Raw JSON:</pre>
         <header>
             <h1 id = "null" style = "text-align: center;"></h1>
         </header>
     </div>
 </div>
 
-<script>
-    var xhttp = new XMLHttpRequest
-    xhttp.open("POST", "/listFiles")
-    xhttp.send()
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4) {
-            if (this.responseText.includes("<tr>") === true) {
-                document.getElementById("serverResponse").innerHTML = this.responseText
-            } else if (this.responseText.includes("<tr>") === false) {
-                document.getElementById("null").innerHTML = "No files present in working directory!"
-            }
-    }}
-</script>
+<script src="/public/assets/js/download.js"></script>
 
 <% include ../partials/footer %>
