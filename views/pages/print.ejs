@@ -17,11 +17,13 @@
         <form id="upload_form" enctype="multipart/form-data" method="post">
             <label id = "uploadButton" class="icon fa-upload button fit">
             Upload A File
-            <input style="display: none;" type="file" name="file" id="file" onchange="uploadFile()">
+            <input accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx, text/*, image/*" style="display: none;" type="file" name="file" id="file" onchange="input(event)">
             </label>
-            <progress class="hidden" id="progressBar" value="0" max="100"></progress>
-            <h2 style="text-align: center; font-size: xx-large;" id="status"></h2>
-            <h2 style="text-align: center; font-size: larger;" id="loaded_n_total"></h2>
+            <div id="readout" class="hidden">
+              <progress id="progress-bar" max="100"></progress>
+              <h2 class="center" id="status"></h2>
+              <h2 class="center" id="loaded_n_total"></h2>
+            </div>
         </form>
         <ul class=" actions fit">
         <li><button id="printButton" class="button fit" onclick = "fileName()">Print</button></li>

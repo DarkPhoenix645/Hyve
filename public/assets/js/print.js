@@ -86,70 +86,117 @@ curr.onreadystatechange = function() {
     }
 };
 
-function _(el) {
-    return document.getElementById(el);
-}
-
-function uploadFile() {
-    _("progressBar").classList.remove("hidden")
-    var file = _("file").files[0];
-    var formdata = new FormData();
-    formdata.append("file", file);
-    var ajax = new XMLHttpRequest();
-    ajax.upload.addEventListener("progress", progressHandler, false);
-    ajax.addEventListener("load", completeHandler(event, file), false);
-    ajax.addEventListener("error", errorHandler, false);
-    ajax.addEventListener("abort", abortHandler, false);
-    ajax.open("POST", "/uploadServer");
-    ajax.send(formdata);
-}
-
-function convertBytes(input) {
-    if (input <  999999) {
-        input = input /  1000
-        return(input.toFixed(2) + " KB / ")
-    } else if (input <  999999999 && input > 999999) {
-        input = input /  1000000
-        return(input.toFixed(2) + " MB / ")
-    } else if (input <  999999999999 && input > 999999999) {
-        input = input /  1000000000
-        return(input.toFixed(2) + " GB / ")
+if (window.XMLHttpRequest) {
+    function convertBytes(input) {
+        if (input < 999999) {
+            input = input /  1000
+            return(input.toFixed(2) + " KB ")
+        } else if (input < 999999999 && input > 999999) {
+            input = input /  1000000
+            return(input.toFixed(2) + " MB ")
+        } else if (input <= 999999999999 && input > 999999999) {
+            input = input /  1000000000
+            return(input.toFixed(2) + " GB ")
+        }
     }
-}
 
-function convertOutputBytes(input) {
-    if (input <  999999) {
-        input = input /  1000
-        return(input.toFixed(2) + " KB ")
-    } else if (input <  999999999 && input > 999999) {
-        input = input /  1000000
-        return(input.toFixed(2) + " MB ")
-    } else if (input <  999999999999 && input > 999999999) {
-        input = input /  1000000000
-        return(input.toFixed(2) + " GB ")
+    function input(event) {
+        document.querySelector("#progress-bar").value = 0
+        document.querySelector("#readout").classList.add("hidden")
+        upload(event, "file")
     }
-}
 
-function progressHandler(event) {
-    _("loaded_n_total").innerHTML = "Uploaded " + convertBytes(event.loaded) + convertOutputBytes(event.total);
-    var percent = (event.loaded / event.total) * 100;
-    _("progressBar").value = Math.round(percent);
-    _("status").innerHTML = Math.round(percent) + "% uploaded";
-}
+    function upload(event, type) {
+        if (event) {
+            var files = event.target.files
+            var xhr = new XMLHttpRequest()
+            var formData = new FormData()
+            xhr.open("POST", "/api/upload?type=" + type)
+            for (i = 0; i < files.length; i++) {
+                var file = files[i]
+                formData.append('file' + i, file)
+            }
+            xhr.upload.onprogress = (event) => {
+                var percentComplete = event.loaded / event.total;
+                percentComplete = parseInt(percentComplete * 100);
+                document.querySelector("#readout").classList.remove("hidden")
+                document.querySelector('#status').innerHTML = percentComplete + '% uploaded'
+                document.querySelector('#loaded_n_total').innerHTML = convertBytes(event.loaded) + ' completed out of ' + convertBytes(event.total)
+                document.querySelector("#progress-bar").value = percentComplete
+            }
+            xhr.onerror = () => { console.error("Upload Failed!") }
+            xhr.onabort = () => { console.error("Upload Cancelled!") }
+            xhr.onabort = () => { console.error("Upload Cancelled!") }
+            xhr.onload = () => { console.log(`Upload Finished!\nServer response: ${xhr.response}`) }
+            xhr.send(formData)
+        } else {throw "No files/folders passed!"}
+    }
+} else { alert("Please use a different browser, yours does not support AJAX!") }
 
-function completeHandler(event, file) {
-    _("status").innerHTML = event.target.responseText + "!";
-    _("uploadButton").innerHTML = "Upload Another File"
-    _("printButton").innerHTML = "Print " + file.name
-    _("progressBar").value = 100
-}
+// function _(el) {
+//     return document.getElementById(el);
+// }
 
-function errorHandler(event) {
-    _("status").innerHTML = "Upload Failed!"
-    _("loaded_n_total").innerHTML = "Keep in mind that the upload cap is 10 GB."
-}
+// function uploadFile() {
+//     _("progressBar").classList.remove("hidden")
+//     var file = _("file").files[0];
+//     var formdata = new FormData();
+//     formdata.append("file", file);
+//     var ajax = new XMLHttpRequest();
+//     ajax.upload.addEventListener("progress", progressHandler, false);
+//     ajax.addEventListener("load", completeHandler(event, file), false);
+//     ajax.addEventListener("error", errorHandler, false);
+//     ajax.addEventListener("abort", abortHandler, false);
+//     ajax.open("POST", "/uploadServer");
+//     ajax.send(formdata);
+// }
 
-function abortHandler(event) {
-    _("status").innerHTML = "Upload Aborted!"
-    _("loaded_n_total").innerHTML = "Why would you do that?"
-}
+// function convertBytes(input) {
+//     if (input <  999999) {
+//         input = input /  1000
+//         return(input.toFixed(2) + " KB / ")
+//     } else if (input <  999999999 && input > 999999) {
+//         input = input /  1000000
+//         return(input.toFixed(2) + " MB / ")
+//     } else if (input <  999999999999 && input > 999999999) {
+//         input = input /  1000000000
+//         return(input.toFixed(2) + " GB / ")
+//     }
+// }
+
+// function convertOutputBytes(input) {
+//     if (input <  999999) {
+//         input = input /  1000
+//         return(input.toFixed(2) + " KB ")
+//     } else if (input <  999999999 && input > 999999) {
+//         input = input /  1000000
+//         return(input.toFixed(2) + " MB ")
+//     } else if (input <  999999999999 && input > 999999999) {
+//         input = input /  1000000000
+//         return(input.toFixed(2) + " GB ")
+//     }
+// }
+
+// function progressHandler(event) {
+//     _("loaded_n_total").innerHTML = "Uploaded " + convertBytes(event.loaded) + convertOutputBytes(event.total);
+//     var percent = (event.loaded / event.total) * 100;
+//     _("progressBar").value = Math.round(percent);
+//     _("status").innerHTML = Math.round(percent) + "% uploaded";
+// }
+
+// function completeHandler(event, file) {
+//     _("status").innerHTML = event.target.responseText + "!";
+//     _("uploadButton").innerHTML = "Upload Another File"
+//     _("printButton").innerHTML = "Print " + file.name
+//     _("progressBar").value = 100
+// }
+
+// function errorHandler(event) {
+//     _("status").innerHTML = "Upload Failed!"
+//     _("loaded_n_total").innerHTML = "Keep in mind that the upload cap is 10 GB."
+// }
+
+// function abortHandler(event) {
+//     _("status").innerHTML = "Upload Aborted!"
+//     _("loaded_n_total").innerHTML = "Why would you do that?"
+// }
