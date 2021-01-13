@@ -2,14 +2,13 @@ require("dotenv").config()
 const functions = require("../functions");
 const formidable = require("formidable");
 const fs = require("fs");
-const { exec } = require("child_process");
 
 module.exports = function(app) {
     app.post('/printFile', (req, res) => {
         functions.getDateTime(req.ip, req.url, req.method) 
-        var fileName = "'" + __dirname.replace(/\/routes/, "") + "/uploads/" + req.query.fileName + "'"      
+        var fileName = `'${process.env.UPLOADS_DIR1}${req.query.fileName}'`      
         functions.printFunction(fileName);
-        res.status('200').send('Print Job Recieved!');
+        res.status('200')
     });
 
     app.get('/cancelAll', (req, res) => {
