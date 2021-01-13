@@ -1,7 +1,5 @@
 require('dotenv').config()
 const { exec } = require('child_process');
-const { promisify } = require('util');
-const os = require('os');
 const fs = require('fs');
 const port = 8080;
 const functions = require("./print")
@@ -74,18 +72,17 @@ module.exports = {
         var dt = Date()
         d = dt.slice(4, 15).replace(/ /g, "/")
         t = dt.slice(16, 33).replace("GMT", "GMT ")
-        console.log(method.toUpperCase() + " request from " + ip.replace(/::ffff:192.168./, "(Local Client) 192.168.") + " for URL " + url + " at " + t + " on " + d) 
+        console.log(`${method.toUpperCase()} request from ${ip.includes("::1") ? ip.replace(/::1/, "localhost") : ip.replace(/::ffff:192.168./, "(Local Client) 192.168.")} for URL ${url} at ${t} on ${d}`) 
     },
 
     printFunction: (fileName) => {
         exec("lp " + fileName, (error, stdout, stderr) => {
             if (error) {
-                console.log("An error occurred while executing the print job : " + `${error}`)
+                console.log(`An error occurred while executing the print job : ${error}`)
                 convert(fileName)
             } else if (stderr) {
-                console.log("An error occurred while executing the print job : " +`${stderr}`);
+                console.log(`An error occurred while executing the print job : ${stderr}`)
             }
-            stdout = `${stdout}`
             var optimisedOutput = stdout.replace('request id is', 'Request ID for print job is')
             var optimisedOutput = optimisedOutput.replace(/(\r\n|\n|\r)/gm,"")
             console.log(optimisedOutput);
@@ -94,24 +91,16 @@ module.exports = {
 
     cancelAll: () => {
         exec(process.env.CANCEL_ALL_EXEC, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`${error}`)
-            } else if (stderr) {
-                console.log(`${stderr}`)
-            }
-            var stdout = `${stdout}`
+            if (error) { console.log(error) } 
+            else if (stderr) { console.log(stderr) }
             console.log(stdout);
         })
     },
 
     cancelOne: (job_id) => {
         exec(process.env.CANCEL_ONE_EXEC + job_id, (error, stdout, stderr) => {
-            if (error) {
-                optimisedOutput = "An error occurred while cancelling the print job : " + `${error}`;
-            } else if (stderr) {
-                optimisedOutput = "An error occurred while cancelling the print job : " + `${stderr}`;
-            }
-            var stdout = `${stdout}`
+            if (error) { console.log(`An error occurred while cancelling the print job : ${error}`) } 
+            else if (stderr) { console.log(`An error occurred while cancelling the print job : ${stderr}`) }
             console.log(stdout);
         })
     },
@@ -119,21 +108,15 @@ module.exports = {
     getCurrentJobs: async() => {
         return new Promise((resolve) => {
             exec(process.env.CURRENT_PRINT_JOBS, (error, stdout, stderr) => {
-                if (error) {
-                    optimisedOutput = "An error occurred : " + `${error}`;
-                } else if (stderr) {
-                    optimisedOutput = "An error occurred : " + `${stderr}`;
-                }
-                currentJobs = `${stdout}`
-                currentJobs = currentJobs.replace(/(\r\n|\n|\r)/gm,"")
+                if (error) { console.log(`An error occurred : ${error}`) }
+                else if (stderr) { console.log(`An error occurred : ${error}`) }
+                currentJobs = stdout.replace(/(\r\n|\n|\r)/gm,"")
                 var Obj = { 
                     Deskjet_1050_J410: "Printer name : Deskjet 1050 J410", 
                     nilanjan: " ", 
                     4096: " " 
                 }; 
-                currentJobs = currentJobs.replace(/Deskjet_1050_J410|nilanjan|4096/gi, function(matched){ 
-                    return Obj[matched]; 
-                }); 
+                currentJobs = currentJobs.replace(/Deskjet_1050_J410|nilanjan|4096/gi, function(matched){ return Obj[matched]; }); 
                 currentJobs = currentJobs.replace(/Monday|Tuesday|Wedenesday|Thursday|Friday|Saturday|Sunday/gi, ' Date & Time')
                 resolve(currentJobs);
             })
