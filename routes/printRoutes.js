@@ -41,7 +41,7 @@ module.exports = function(app) {
                 outputZip === "Error!" ? res.status(500).send("Error!") : res.status(200).download(outputZip)
             } else {
                 if (fs.existsSync(process.env.UPLOADS_DIR1 + query)) {
-                    outputZip = await functions.zip(folder, Date.now())
+                    outputZip = await functions.zip(query, Date.now())
                     outputZip === "Error!" ? res.status(500).send("An error occurred while zipping the folder!") : res.status(200).download(outputZip)
                 } else { res.status(404).send("Folder not found!") }
             }
