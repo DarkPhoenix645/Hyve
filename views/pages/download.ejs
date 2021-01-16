@@ -15,7 +15,12 @@
             <h1>Select the files you want to download</h1>
         </header>
         <table id="serverResponse"></table>
-        <pre id="json">Raw JSON:</pre>
+        <button class="fit" 
+                onclick="document.getElementById('json').classList.contains('hidden') ? 
+                         document.getElementById('json').classList.remove('hidden') : 
+                         document.getElementById('json').classList.add('hidden')"
+        >Show RAW</button>
+        <pre class="hidden" id="json">Raw JSON:</pre>
         <header>
             <h1 id = "null" style = "text-align: center;"></h1>
         </header>
