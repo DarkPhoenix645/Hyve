@@ -15,7 +15,7 @@
     "ejs": "^2.7.4",
     "express": "^4.17.1",
     "formidable": "^1.2.2",
-    "mongoose": "^5.11.10"
+    "mongoose": "^5.11.11"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
