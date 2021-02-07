@@ -8,9 +8,9 @@ if (window.XMLHttpRequest) {
         if (job_id !== null) {
             cancelOne.open("GET", "/cancelOne?job_id=" + job_id)
             cancelOne.send()
-            alert("Cancellation request for job " + job_id + " sent")
+            toast(`Cancellation request for job ${job_id} sent`, "success")
         } else if (job_id === null) {
-            alert("Cancellation request was not sent!")
+            toast("Cancellation request was not sent!", "warn")
         }
     }
 
@@ -18,7 +18,7 @@ if (window.XMLHttpRequest) {
         var cancelAll = new XMLHttpRequest
         cancelAll.open("GET", "/cancelAll")
         cancelAll.send()
-        alert("Universal cancellation request sent")
+        toast("Universal cancellation request sent", "success")
     }
 
     function print(fileName) {
@@ -28,13 +28,13 @@ if (window.XMLHttpRequest) {
             if (fileName !== null) {
                 xhttp.open("POST", "/printFile?fileName=" + fileName)
                 xhttp.send()
-                alert("Print Request Sent!");
+                toast("Print Request Sent!", "success");
             }
         } else if (fileName !== undefined) {
             var xhttp = new XMLHttpRequest
             xhttp.open("POST", "/printFile?fileName=" + fileName)
             xhttp.send()
-            alert("Print Request Sent for " + fileName + "!")
+            toast(`Print Request Sent for ${fileName}!`, "success")
             document.getElementById("printButton").innerHTML = "Print"
             document.getElementById("progressBar").classList.add = "hidden"
             document.getElementById("status").innerHTML = ""
@@ -123,4 +123,24 @@ if (window.XMLHttpRequest) {
             xhr.send(formData)
         } else {throw "No files/folders passed!"}
     }
-} else { alert("Please use a different browser, yours does not support AJAX!") }
+} else { toast("Please use a different browser, yours does not support AJAX!", "incorrect") }
+
+function toast(message, type, url) {
+    if (type === "success") { var color = "#7cc20c"; }
+    if (type === "warn") { var color = "#e0a016"; }
+    if (type === "incorrect") { var color = "#ff0000"; }
+    if (type === "info") { var color = "#7cc20c"; var image = "/public/images/animation.gif" }    
+    if (type !== "input") {
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: false,
+            destination: url,
+            newWindow: true,
+            gravity: "bottom",
+            position: "right",
+            backgroundColor: color
+        }).showToast();
+    }
+    console.log(message, type, url)
+}
