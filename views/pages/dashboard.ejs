@@ -375,15 +375,15 @@
     data.send()
 
     function toast(message, cross, type, url) {
-        if (type === "success") { var color = "#7cc20c"; var image = "/public/images/correct.svg" }
-        if (type === "warn") { var color = "#e0a016"; var image = "/public/images/alert.svg" }
-        if (type === "incorrect") { var color = "#ff0000"; var image = "/public/images/wrong.svg" }
+        if (type === "success") { var color = "#7cc20c"; }
+        if (type === "warn") { var color = "#e0a016"; }
+        if (type === "incorrect") { var color = "#ff0000"; }
         if (type === "info") { var color = "#7cc20c"; var image = "/public/images/animation.gif" }    
         if (type !== "input") {
             Toastify({
-                text: "<img width='32' height='32' src='" + image + "'" + "> " + message,
+                text: message,
                 duration: 3000,
-                close: cross,
+                close: false,
                 destination: url,
                 newWindow: true,
                 gravity: "bottom",

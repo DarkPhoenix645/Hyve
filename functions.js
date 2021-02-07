@@ -1,7 +1,7 @@
 require('dotenv').config()
 const { exec } = require('child_process');
 const fs = require('fs');
-const port = 8080;
+const port = process.env.PORT;
 const functions = require("./print")
 var memArr = []
 var public_ip = ""
@@ -68,13 +68,6 @@ function ip() {
 
 
 module.exports = {
-    getDateTime: (ip, url, method) => {
-        var dt = Date()
-        d = dt.slice(4, 15).replace(/ /g, "/")
-        t = dt.slice(16, 33).replace("GMT", "GMT ")
-        console.log(`${method.toUpperCase()} request from ${ip.includes("::1") ? ip.replace(/::1/, "localhost") : ip.replace(/::ffff:192.168./, "(Local Client) 192.168.")} for URL ${url} at ${t} on ${d}`) 
-    },
-
     printFunction: (fileName) => {
         exec("lp " + fileName, (error, stdout, stderr) => {
             if (error) {
@@ -162,7 +155,7 @@ module.exports = {
                 if (stats.isFile() === false) {
                     dirCounter += 1
                     buffer.name = item 
-                    buffer.birthTime = stats.birthtime.toString()
+                    buffer.birthTime = (new Date(stats.birthtimeMs).toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })).slice(5)
                     buffer.size = "-"
                     buffer.downloadLink = public_ip + "/api/download?folder=" + encodeURI(item)
                     data.folders[dirCounter] = buffer
@@ -170,7 +163,7 @@ module.exports = {
                 } else if (stats.isFile() === true) {
                     fileCounter += 1
                     buffer.name = item 
-                    buffer.birthTime = stats.birthtime.toString()
+                    buffer.birthTime = (new Date(stats.birthtimeMs).toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })).slice(5)
                     buffer.size = await functions.convertBytes(stats.size, true)
                     buffer.downloadLink = public_ip + "/api/download?file=" + encodeURI(item)
                     data.files[fileCounter] = buffer

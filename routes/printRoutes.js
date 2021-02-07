@@ -4,34 +4,29 @@ const formidable = require("formidable");
 const fs = require("fs");
 
 module.exports = function(app) {
-    app.post('/printFile', (req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method) 
+    app.post('/printFile', (req, res) => { 
         var fileName = `'${process.env.UPLOADS_DIR1}${req.query.fileName}'`      
         functions.printFunction(fileName);
         res.status('200')
     });
 
     app.get('/cancelAll', (req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method) 
         functions.cancelAll();
         res.status(200);
     });
     
     app.get('/cancelOne', (req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method) 
         functions.cancelOne(req.query.job_id);
         res.status(200);
     });
 
     app.get('/currentJobs', async (req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method) 
         currentJobs = await functions.getCurrentJobs()
         currentJobs = JSON.stringify(currentJobs)
         res.status(200).send(currentJobs);
     });
 
     app.get('/api/download', async(req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method) 
         if (req.query.folder) {
             var query = req.query.folder
             if (query.includes("..;..") === true) {
@@ -60,7 +55,6 @@ module.exports = function(app) {
     })
 
     app.post('/api/upload', async function(req, res){
-        functions.getDateTime(req.ip, req.url, req.method)
         if (req.query.type === "folder") {
             var form = new formidable.IncomingForm();
             var subDir = []
@@ -101,7 +95,6 @@ module.exports = function(app) {
     });
 
     app.get('/api/listFiles', async(req, res) => {
-        functions.getDateTime(req.ip, req.url, req.method)
         var files = await fs.readdirSync(process.env.UPLOADS_DIR1)
         var output = await functions.processData(files)
         res.json(output)
