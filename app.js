@@ -3,7 +3,7 @@ const express = require('express');
 const compression = require('compression');
 const routes = require('./routes/index.js');
 const printRoutes = require('./routes/printRoutes');
-const functions = require("./functions")
+const functions = require("./scripts/functions")
 const app = express();
 const port = process.env.PORT;
 

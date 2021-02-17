@@ -1,5 +1,5 @@
 require("dotenv").config()
-const functions = require("../functions");
+const functions = require("../scripts/functions");
 const formidable = require("formidable");
 const fs = require("fs");
 

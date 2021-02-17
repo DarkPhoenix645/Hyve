@@ -1,4 +1,4 @@
-const functions = require("../functions")
+const functions = require("../scripts/functions")
 
 module.exports = function(app) {
     app.get('/', function(req, res) {
