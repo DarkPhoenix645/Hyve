@@ -37,7 +37,7 @@ function maxClock() {
 //Exported Functions
 module.exports = {
     printFunction: (fileName) => {
-        exec("lp " + fileName, (error, stdout, stderr) => {
+        exec(`lp ${fileName}`, (error, stdout, stderr) => {
             if (error) {
                 console.log("An error occurred while executing the print job : " + `${error}`)
             } else if (stderr) {

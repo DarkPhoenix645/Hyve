@@ -8,13 +8,14 @@ var public_ip = ""
 var local_ip = ""
 
 function convert(fileName) {
-    exec("soffice --convert-to pdf " + fileName + " --outdir " + __dirname + "/uploads", (error, stdout, stderr) => {
-        if (error) {console.log("err" + `${error}`)} else if (stderr) {console.log("stderr" + `${stderr}`)}
-        stdout = `${stdout}`
-        stdout = stdout.replace(/(\r\n|\n|\r)/gm, "")
-        stdout = stdout.replace(/using.+/g,"$'")
-        stdout = /\/([^->]*)$/.exec(stdout)[1]
-        functions.printFunction("/" + stdout)
+    var file = fileName
+    fileName = fileName.substring(fileName.lastIndexOf("/") + 1)
+    fileName = fileName.substring(0, fileName.lastIndexOf("."))
+    fileName = `${process.env.UPLOADS_DIR1}${fileName}.pdf`
+    exec(`unoconv --format pdf --output ${fileName} ${file}`, (error, stdout, stderr) => {
+        if (error) {console.log(`${error}`)} else if (stderr) {console.log("stderr" + `${stderr}`)}
+        console.log(fileName)
+        functions.printFunction(fileName)
     })
 }
 
@@ -69,7 +70,7 @@ function ip() {
 
 module.exports = {
     printFunction: (fileName) => {
-        exec("lp " + fileName, (error, stdout, stderr) => {
+        exec(`lp ${fileName}`, (error, stdout, stderr) => {
             if (error) {
                 console.log(`An error occurred while executing the print job : ${error}`)
                 convert(fileName)
