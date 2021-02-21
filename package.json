@@ -4,9 +4,10 @@
   "description": "My First Full Stack Production Ready Website",
   "main": "app.js",
   "scripts": {
-    "build": "node app.js",
-    "init": "nodemon app.js"
+    "production": "pm2 start app.js",
+    "init": "pm2-dev start app.js"
   },
+  "repository": "https://github.com/DarkPhoenix645/Hyve",
   "author": "Nilanjan Mitra",
   "license": "ISC",
   "dependencies": {
@@ -17,7 +18,5 @@
     "formidable": "^1.2.2",
     "mongoose": "^5.11.17"
   },
-  "devDependencies": {
-    "nodemon": "^2.0.7"
-  }
+  "devDependencies": {}
 }
