@@ -1,0 +1,6 @@
+{
+    "apps": [{
+        "name" : "Hyve",
+        "script" : "node app.js"
+    }]
+}

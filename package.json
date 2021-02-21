@@ -4,8 +4,8 @@
   "description": "My First Full Stack Production Ready Website",
   "main": "app.js",
   "scripts": {
-    "production": "pm2 start app.js",
-    "init": "pm2-dev start app.js"
+    "production": "pm2 start process.json",
+    "init": "pm2-dev start process.json"
   },
   "repository": "https://github.com/DarkPhoenix645/Hyve",
   "author": "Nilanjan Mitra",
