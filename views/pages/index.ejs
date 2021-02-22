@@ -1,16 +1,24 @@
 <%- include ("../partials/header") %>
 <%- include ("../partials/navbar") %>
+<% var image, name %>
 
 <div id="main">
     <div class="inner">
         <header>
             <span style="float: right;">
-                <img style="border-radius: 50%;vertical-align: middle;" src="/public/users/<%= image %>" width="64px" height="64px">
+                <% if (image !== undefined) { %>
+                    <img style="border-radius: 50%;vertical-align: middle;" src="/public/users/<%= image %>" width="64px" height="64px">
+                <% } else { %>
+                    <img style="border-radius: 50%;vertical-align: middle;" src="/public/users/user.svg" width="64px" height="64px">
+                <% } %> 
             </span>
             <div style="background-image: linear-gradient(to right, red, rgb(156, 10, 156), rgb(209, 70, 214), rgb(212, 130, 223)); -webkit-text-fill-color: transparent; -webkit-background-clip: text;">
             <a>
-                <h1>Welcome to Hyve<%= name.replace(/user.svg/g, "" ) %>!
-                </h1>
+                <% if (name !== undefined) { %>
+                    <h1>Welcome to Hyve, <%= name %>!</h1>
+                <% } else { %>
+                    <h1>Welcome to Hyve!</h1>
+                <% } %>
             </a>
             </div>
         </header>

@@ -3,9 +3,15 @@ const functions = require("../scripts/functions")
 module.exports = function(app) {
     app.get('/', function(req, res) {
         if (req.query.name === undefined) {
-            res.render('pages/index', { name: "user.svg", image: "user.svg"});
+            res.render('pages/index');
         } else {
-            res.render('pages/index', { name: ", " + req.query.name, image: req.query.name.replace(/ .*/g, "") + ".jpg" });
+            var img = `${req.query.name.replace(/ .*/g, "")}.jpg`
+            var exists = functions.check(img, "/public/users/")
+            if (exists) {
+                res.render('pages/index', { name: req.query.name, image: img });
+            } else {
+                res.render('pages/index', { name: req.query.name, image: 'user.svg' });
+            }
         }
     });
 

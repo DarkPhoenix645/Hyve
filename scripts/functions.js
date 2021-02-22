@@ -1,4 +1,3 @@
-require('dotenv').config()
 const { exec } = require('child_process');
 const fs = require('fs');
 const port = process.env.PORT;
@@ -43,7 +42,7 @@ function ip() {
             }
             stdout = `${stdout}`;
             stdout = stdout.replace(/(\r\n|\n|\r)/gm,"");
-            stdout = stdout.replace(" ", "");
+            stdout = stdout.substring(0, stdout.indexOf(" "))
             local_ip = "http://" + stdout + ':' + port
             arr.push(local_ip)
         });
@@ -148,7 +147,7 @@ module.exports = {
     processData: (files) => {
         return new Promise((resolve) => {
         var data = { totalItems:"", files:{}, folders:{} }
-        var buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
+        var buffer = { name: "", size: "", birthTime: "", downloadLink: "", type: "" }
         var fileCounter = 0
         var dirCounter = 0
         files.forEach((item, index) => {
@@ -159,16 +158,18 @@ module.exports = {
                     buffer.birthTime = (new Date(stats.birthtimeMs).toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })).slice(5)
                     buffer.size = "-"
                     buffer.downloadLink = public_ip + "/api/download?folder=" + encodeURI(item)
+                    buffer.type = "-"
                     data.folders[dirCounter] = buffer
-                    buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
+                    buffer = { name: "", size: "", birthTime: "", downloadLink: "", type: "" }
                 } else if (stats.isFile() === true) {
                     fileCounter += 1
                     buffer.name = item 
                     buffer.birthTime = (new Date(stats.birthtimeMs).toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })).slice(5)
                     buffer.size = await functions.convertBytes(stats.size, true)
                     buffer.downloadLink = public_ip + "/api/download?file=" + encodeURI(item)
+                    buffer.type = item.substring(item.lastIndexOf(".") + 1, item.length)
                     data.files[fileCounter] = buffer
-                    buffer = { name: "", size: "", birthTime: "", downloadLink: "" }
+                    buffer = { name: "", size: "", birthTime: "", downloadLink: "", type: "" }
                 } else if (err) {console.log(err)}
                 if (dirCounter + fileCounter === files.length) {
                     data.totalItems = files.length
@@ -179,6 +180,11 @@ module.exports = {
             })
         })
     })
+    },
+
+    check: (fileName, relativeDir) => {
+        var result = fs.existsSync(__dirname.substring(0, __dirname.lastIndexOf('/')) + relativeDir + fileName)
+        return result
     },
 
     getCPU: async() => {

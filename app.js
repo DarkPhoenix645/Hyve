@@ -1,4 +1,3 @@
-require("dotenv").config()
 const express = require('express');
 const compression = require('compression');
 const routes = require('./routes/index.js');
