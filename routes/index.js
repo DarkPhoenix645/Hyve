@@ -2,7 +2,7 @@ const functions = require("../scripts/functions")
 
 module.exports = function(app) {
     app.get('/', function(req, res) {
-        if (req.query.name === undefined) {
+        if (req.query.name === undefined || req.query.name === "" || req.query.name === null) {
             res.render('pages/index');
         } else {
             var img = `${req.query.name.replace(/ .*/g, "")}.jpg`

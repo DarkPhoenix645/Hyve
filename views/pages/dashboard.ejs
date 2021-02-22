@@ -256,66 +256,17 @@
         if (type === "success") { var color = "#7cc20c"; }
         if (type === "warn") { var color = "#e0a016"; }
         if (type === "incorrect") { var color = "#ff0000"; }
-        if (type === "info") { var color = "#7cc20c"; var image = "/public/images/animation.gif" }    
-        if (type !== "input") {
-            Toastify({
-                text: message,
-                duration: 3000,
-                close: false,
-                destination: url,
-                newWindow: true,
-                gravity: "bottom",
-                position: "right",
-                backgroundColor: color
-            }).showToast();
-        } else {
-            Toastify({
-                text: message + "<input id='toast-input' type='text'><br><button onclick='makeCookie(name, document.getElementById('toast-input').value)'>",
-                duration: -1,
-                close: cross,
-                destination: url,
-                newWindow: true,
-                gravity: "bottom",
-                position: "right",
-                backgroundColor: color
-            }).showToast();
-        }
-    }
- 
-    function getCookie(name) {
-        var dc = document.cookie;
-        var prefix = name + "=";
-        var begin = dc.indexOf("; " + prefix);
-        if (begin == -1) {
-            begin = dc.indexOf(prefix);
-            if (begin != 0) return null;
-        }
-        else {
-            begin += 2;
-            var end = document.cookie.indexOf(";", begin);
-            if (end == -1) { end = dc.length; }
-        }
-        return decodeURI(dc.substring(begin + prefix.length, end));
-    } 
-
-    function makeCookie(name, value) {
-        document.cookie = name + "=" + value
-    }
-
-    var cookie = getCookie("hasVisited");
-    console.log(cookie)
-    if (cookie == null) {
-        var d = new Date();
-        d.setTime(d.getTime() + (30*24*60*60*1000));
-        var expires = "expires="+ d.toUTCString();
-        document.cookie = "hasVisited=true; expires=" + expires
-        setTimeout(function(){toast("FYI, this means that data is being fetched.", true, "info")}, 1500)
-        setTimeout(function(){toast("What's your name?", true, "input")}, 1500)
-    } else {
-        var name = getCookie("name")
-        console.log(name)
-        if (name !== "null") { setTimeout(function(){toast("Welcome Back, " + name + "!", true, "success")}, 1500) }
-        if (name === "null") { setTimeout(function(){toast("Welcome Back!", true, "success")}, 1500) }
+        if (type === "info") { var color = "#7cc20c"; var image = "/public/images/animation.gif" }
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: false,
+            destination: url,
+            newWindow: true,
+            gravity: "bottom",
+            position: "right",
+            backgroundColor: color
+        }).showToast();
     }
 
     function serverClose() {

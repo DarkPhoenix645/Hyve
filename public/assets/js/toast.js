@@ -1,3 +1,23 @@
+// Inserted Code:
+// This is an abstraction layer for Toastify
+
+function toast(message, cross, type, url) {
+    if (type === "success") { var color = "#7cc20c"; }
+    if (type === "warn") { var color = "#e0a016"; }
+    if (type === "incorrect") { var color = "#ff0000"; }
+    if (type === "info") { var color = "#7cc20c"; var image = "/public/images/animation.gif" }
+    Toastify({
+        text: message,
+        duration: 3000,
+        close: false,
+        destination: url,
+        newWindow: true,
+        gravity: "bottom",
+        position: "right",
+        backgroundColor: color
+    }).showToast();
+} 
+
 (function(root, factory) {
   if (typeof module === "object" && module.exports) {
     module.exports = factory();
