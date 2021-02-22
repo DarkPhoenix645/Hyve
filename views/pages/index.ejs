@@ -82,4 +82,66 @@
     </div>
 </div>
 
+<script src="/public/assets/js/toast.js"></script>
+<script>
+    if (getCookie("hasVisited") === null) {
+        var date = new Date();
+        date.setTime(date.getTime() + (30*24*60*60*1000));
+        var expires = "expires="+ date.toUTCString();
+        if (getCookie("name") === null) {
+            var site = new URL(window.location.href)
+            var name = encodeURIComponent(site.searchParams.get("name"))
+            if (name === null || name === "null") {
+                document.cookie = `hasVisited=true; expires=${expires}`
+            } else {
+                document.cookie = `name=${name}; expires=${expires}`
+                document.cookie = `hasVisited=true; expires=${expires}`
+            }
+            name !== null && name !== "null" && name !== "" ? 
+                setTimeout(function(){toast(`Welcome to Hyve, ${name}!`, true, "success")}, 1500) : 
+                setTimeout(function(){toast(`Welcome to Hyve!`, true, "success")}, 1500)
+        }
+    } else {
+        var name = getCookie("name")
+        if (name === null || name === "null") { 
+            var date = new Date();
+            date.setTime(date.getTime() + (30*24*60*60*1000));
+            var expires = "expires="+ date.toUTCString();
+            setTimeout(function(){toast("Welcome Back!", true, "success")}, 1500) 
+            var site = new URL(window.location.href)
+            var n = encodeURIComponent(site.searchParams.get("name"))
+            if (n !== null && n !== "null") {
+                document.cookie = `name=${n}; expires=${expires}`
+                document.cookie = `hasVisited=true; expires=${expires}`
+            }
+        }
+        if (name === "") {
+            document.cookie.split(";").forEach(
+                function(cookie) { 
+                    document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                }
+            );
+            window.location.replace(`http://${window.location.host}`)
+        }
+        if (name !== null && name !== "null") {
+            if (!window.location.href.includes(encodeURIComponent(name))) {
+                window.location.replace(`http://${window.location.host}/?name=${name}`)
+            } else {
+                setTimeout(function(){toast("Welcome Back, " + name + "!", true, "success")}, 1500)
+            }
+        }
+    }
+
+    function getCookie(input) {
+        cookies = document.cookie.split("; ")
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].split("=")
+            if (cookie[0] === input) {
+                return cookie[1]
+            }
+        }
+        return null
+    }
+</script>
+
 <%- include ("../partials/footer") %>
