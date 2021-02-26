@@ -1,4 +1,3 @@
-//Table Heading and Heading Text Generation
 var table = document.getElementById('serverResponse');
 var thead = document.createElement('thead')
 var tbody = document.createElement('tbody')
@@ -25,7 +24,6 @@ thead.appendChild(tr)
 table.appendChild(thead)
 var counter = 0
 
-//Getting content from server
 var xhttp = new XMLHttpRequest
 xhttp.open("GET", "/api/listFiles")
 xhttp.send()
@@ -46,7 +44,6 @@ function download(link) {
     window.open(link.replace("59.89.42.63", "localhost"))
 }
 
-//Processing Content
 function generator(i, isFolder) {
     counter += 1
     isFolder === true ? type = "folders" : type = "files"
@@ -64,6 +61,7 @@ function generator(i, isFolder) {
         imgIcon.height = "40"
         imgIcon.width = "40"
         imgIcon.setAttribute('style', 'filter: invert(.75);')
+        imgIcon.setAttribute('id', `img${counter}`)
     var textName = document.createTextNode(response[type][i].name)
     var textSize = document.createTextNode(response[type][i].size)
     var textLastModified = document.createTextNode(response[type][i].birthTime)
@@ -86,4 +84,36 @@ function generator(i, isFolder) {
     tr.appendChild(size)
     tr.appendChild(lastModified)
     tbody.appendChild(tr)
+}
+
+changeIconSize()
+window.onresize = changeIconSize
+
+function changeIconSize() {
+    var imgArr = document.querySelectorAll('img')
+    if (window.innerWidth <= 800 && window.innerHeight <= 500) {
+        for (i = 0; i < imgArr.length; i++) {
+            var image = document.getElementById(`img${i + 1}`)
+            image.width = 25
+            image.height = 25
+        }
+    } else if (window.innerWidth <= 1024 && window.innerHeight <= 600) {
+        for (i = 0; i < imgArr.length; i++) {
+            var image = document.getElementById(`img${i + 1}`)
+            image.width = 30
+            image.height = 30
+        }
+    } else if (window.innerWidth <= 1920 && window.innerHeight <= 900) {
+        for (i = 0; i < imgArr.length; i++) {
+            var image = document.getElementById(`img${i + 1}`)
+            image.width = 40
+            image.height = 40
+        }
+    } else if (window.innerWidth > 1920 && window.innerHeight > 900) {
+        for (i = 0; i < imgArr.length; i++) {
+            var image = document.getElementById(`img${i + 1}`)
+            image.width = 50
+            image.height = 50
+        }
+    }
 }

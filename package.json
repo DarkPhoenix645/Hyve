@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "production": "pm2 start process.json",
-    "init": "pm2-dev start process.json"
+    "init": "pm2-dev start process.json --ignore 'data'"
   },
   "repository": "https://github.com/DarkPhoenix645/Hyve",
   "author": "Nilanjan Mitra",

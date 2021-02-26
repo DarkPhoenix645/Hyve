@@ -14,11 +14,7 @@ module.exports = function(app) {
             }
         }
     });
-
-    app.get('/chart.js', function(req, res) {
-        res.sendFile(__dirname.replace("routes", "") + 'chart.js');
-    });
-
+    
     app.get('/serverClose', function(req, res) {
         if (req.query.key === "SuperSecretKey") {
             res.status(200).send("Recieved!")

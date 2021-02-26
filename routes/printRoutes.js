@@ -61,14 +61,14 @@ module.exports = function(app) {
             form.maxFileSize = 10000 * 1024 * 1024
             form.multiples = true;
             form.uploadDir = process.env.UPLOADS_DIR1
-            form.on('file', async function(field, file) {
+            form.on('file', function(field, file) {
                 var x = file.name.replace(/\/[^\/]+$/,"")
                 if (!subDir.includes(x)) { subDir.push(x) } 
                 files.push(file)
             });
             form.on('error', function(err) { 
                 console.log('An error has occured: ' + err); 
-                });
+            });
             form.on('end', function() { 
                 functions.manageUploads(subDir, files)
                 res.end('File(s) uploaded and saved!'); 
@@ -80,7 +80,7 @@ module.exports = function(app) {
             form.maxFileSize = 10000 * 1024 * 1024
             form.multiples = true;
             form.uploadDir = process.env.UPLOADS_DIR1
-            form.on('file', async function(field, file) {
+            form.on('file', function(field, file) {
                 fs.renameSync(file.path, process.env.UPLOADS_DIR1 + file.name)
             });
             form.on('error', function(err) { 
