@@ -3,5 +3,5 @@ typings/
 .npm
 *.tgz
 .env
-downloads/
-uploads/
+data/
+*.log
