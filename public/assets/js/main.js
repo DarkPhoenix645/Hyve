@@ -78,8 +78,7 @@
 
 					})
 					.triggerHandler('--init');
-
-				// Fix.
+					
 					if (browser.name == 'ie'
 					||	browser.mobile)
 						$this

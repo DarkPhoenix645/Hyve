@@ -1,31 +1,32 @@
 const functions = require("../scripts/functions");
 const formidable = require("formidable");
+const { requireAuth } = require('../scripts/authChecker')
 const fs = require("fs");
 
 module.exports = function(app) {
-    app.post('/printFile', (req, res) => { 
+    app.post('/printFile', requireAuth, (req, res) => { 
         var fileName = `'${process.env.UPLOADS_DIR1}${req.query.fileName}'`      
         functions.printFunction(fileName);
         res.status('200')
     });
 
-    app.get('/cancelAll', (req, res) => {
+    app.get('/cancelAll', requireAuth, (req, res) => {
         functions.cancelAll();
         res.status(200);
     });
     
-    app.get('/cancelOne', (req, res) => {
+    app.get('/cancelOne', requireAuth, (req, res) => {
         functions.cancelOne(req.query.job_id);
         res.status(200);
     });
 
-    app.get('/currentJobs', async (req, res) => {
+    app.get('/currentJobs', requireAuth, async (req, res) => {
         currentJobs = await functions.getCurrentJobs()
         currentJobs = JSON.stringify(currentJobs)
         res.status(200).send(currentJobs);
     });
 
-    app.get('/api/download', async(req, res) => {
+    app.get('/api/download', requireAuth, async(req, res) => {
         if (req.query.folder) {
             var query = req.query.folder
             if (query.includes("..;..") === true) {
@@ -53,7 +54,7 @@ module.exports = function(app) {
         }
     })
 
-    app.post('/api/upload', async function(req, res){
+    app.post('/api/upload', requireAuth, async function(req, res){
         if (req.query.type === "folder") {
             var form = new formidable.IncomingForm();
             var subDir = []
@@ -93,13 +94,13 @@ module.exports = function(app) {
         }
     });
 
-    app.get('/api/listFiles', async(req, res) => {
+    app.get('/api/listFiles', requireAuth, async(req, res) => {
         var files = await fs.readdirSync(process.env.UPLOADS_DIR1)
         var output = await functions.processData(files)
         res.json(output)
     })
       
-    app.get("/data", async(req, res) => {
+    app.get("/data", requireAuth, async(req, res) => {
         var arr = await functions.getCPU()
         arr = arr.filter(item => item)
         res.send(arr)

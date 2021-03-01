@@ -1,7 +1,10 @@
 const functions = require("../scripts/functions")
+const { requireAuth, checkUser } = require('../scripts/authChecker')
 
 module.exports = function(app) {
-    app.get('/', function(req, res) {
+    app.get('*', checkUser)
+
+    app.get('/', requireAuth, function(req, res) {
         if (req.query.name === undefined || req.query.name === "" || req.query.name === null) {
             res.render('pages/index');
         } else {
@@ -15,7 +18,7 @@ module.exports = function(app) {
         }
     });
     
-    app.get('/serverClose', function(req, res) {
+    app.get('/serverClose', requireAuth, function(req, res) {
         if (req.query.key === "SuperSecretKey") {
             res.status(200).send("Recieved!")
             setTimeout(function(){ process.exit(0); }, 15000)
@@ -24,7 +27,7 @@ module.exports = function(app) {
         }
     });
 
-    app.get('/shutDown', function(req, res) {
+    app.get('/shutDown', requireAuth, function(req, res) {
         if (req.query.key === "SuperSecretKey") {
             functions.shutDown()
             res.status(200).send("Recieved!")
@@ -33,27 +36,27 @@ module.exports = function(app) {
         }
     });
 
-    app.get('/generic', function(req, res) {
+    app.get('/generic', requireAuth, function(req, res) {
         res.render('pages/generic');
     });
 
-    app.get('/dashboard', function(req, res) {
+    app.get('/dashboard', requireAuth, function(req, res) {
         res.render('pages/dashboard');
     });
 
-    app.get('/element', function(req, res) {
+    app.get('/element', requireAuth, function(req, res) {
         res.render('pages/element');
     });
     
-    app.get('/uploads', function(req, res) {
+    app.get('/uploads', requireAuth, function(req, res) {
         res.render('pages/uploads')
     });
 
-    app.get('/downloads', function(req, res) {
+    app.get('/downloads', requireAuth, function(req, res) {
         res.render('pages/download');
     });
 
-    app.get('/print', (req, res) => {
+    app.get('/print', requireAuth, (req, res) => {
         res.render('./pages/print');
     });
 };

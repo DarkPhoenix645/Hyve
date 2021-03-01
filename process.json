@@ -2,17 +2,20 @@
     "apps": [{
         "name" : "Hyve",
         "script" : "node app.js",
+        "max_restarts": 10,
         "env" : {
             "CURRENT_PRINT_JOBS" : "lpstat",
             "PRINT_EXEC" : "lp ",
             "CANCEL_ALL_EXEC" : "cancel -a",
             "CANCEL_ONE_EXEC" : "cancel Deskjet-1050-J410-",
-            "DOWNLOADS_DIR" : "/home/nilanjan/Desktop/Git/Hyve/data/downloads/Hyve-",
+            "DOWNLOADS_DIR" : "/home/nilanjan/Desktop/Git/Hyve/data/downloads/",
             "UPLOADS_DIR1" : "/home/nilanjan/Desktop/Git/Hyve/data/uploads/",
             "CPU_EXEC": "lscpu | grep -E 'Architecture|Vendor ID|Model name'",
             "SERVER_LOG_LOCAL_IP" : "hostname -I",
             "SERVER_LOG_PUBLIC_IP" : "dig +short myip.opendns.com @resolver1.opendns.com",
-            "PORT" : 8080 
+            "PORT" : 8080,
+            "JWT_SECRET": "",
+            "DATABASE_LOGIN": ""
         }
     }]
 }

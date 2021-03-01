@@ -4,18 +4,21 @@
   "description": "My First Full Stack Production Ready Website",
   "main": "app.js",
   "scripts": {
-    "production": "pm2 start process.json",
-    "init": "pm2-dev start process.json --ignore 'data'"
+    "production": "pm2 start secret.json",
+    "init": "pm2-dev start secret.json --ignore 'data'"
   },
   "repository": "https://github.com/DarkPhoenix645/Hyve",
   "author": "Nilanjan Mitra",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "formidable": "^1.2.2",
-    "mongoose": "^5.11.17"
-  },
-  "devDependencies": {}
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.15",
+    "validator": "^13.5.2"
+  }
 }

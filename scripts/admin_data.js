@@ -36,20 +36,6 @@ function maxClock() {
 
 //Exported Functions
 module.exports = {
-    printFunction: (fileName) => {
-        exec(`lp ${fileName}`, (error, stdout, stderr) => {
-            if (error) {
-                console.log("An error occurred while executing the print job : " + `${error}`)
-            } else if (stderr) {
-                console.log("An error occurred while executing the print job : " + `${stderr}`);
-            }
-            stdout = `${stdout}`
-            var optimisedOutput = stdout.replace('request id is', 'Request ID for print job is')
-            var optimisedOutput = optimisedOutput.replace(/(\r\n|\n|\r)/gm,"")
-            console.log(optimisedOutput);
-        })
-    },
-
     cpuUsage: async () => {
         var max = await maxClock()
         return new Promise((resolve) => {
@@ -70,21 +56,6 @@ module.exports = {
             for (i=0; i <= coreCount; i++) {
                 if (i < coreCount) {core = await getCoreUsage(i), memArr.push(core)}
                 else if (i === coreCount) {resolve(memArr), memArr = []}
-            }
-        })
-    },
-
-    convertBytes: (input, humanReadable) => {
-        return new Promise((resolve) => {
-            if (input < 999999) {
-                input = input /  1000
-                humanReadable === true ? resolve(input.toFixed(2) + " KB") : resolve(input.toFixed(2))
-            } else if (input < 999999999 && input > 999999) {
-                input = input /  1000000
-                humanReadable === true ? resolve(input.toFixed(2) + " MB") : resolve(input.toFixed(2))
-            } else if (input < 999999999999 && input > 999999999) {
-                input = input /  1000000000
-                humanReadable === true ? resolve(input.toFixed(2) + " GB") : resolve(input.toFixed(2))
             }
         })
     },
