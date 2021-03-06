@@ -14,6 +14,7 @@
             "SERVER_LOG_LOCAL_IP" : "hostname -I",
             "SERVER_LOG_PUBLIC_IP" : "dig +short myip.opendns.com @resolver1.opendns.com",
             "PORT" : 8080,
+            "SECURE_PORT": 8443,
             "JWT_SECRET": "",
             "DATABASE_LOGIN": ""
         }

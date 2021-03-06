@@ -155,7 +155,7 @@ function processData (files) {
                 buffer.name = item 
                 buffer.birthTime = (new Date(stats.birthtimeMs).toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })).slice(5)
                 buffer.size = "-"
-                buffer.downloadLink = public_ip + "/api/download?folder=" + encodeURI(item)
+                buffer.downloadLink = "/api/download?folder=" + encodeURI(item)
                 buffer.type = "-"
                 data.folders[dirCounter] = buffer
                 buffer = { name: "", size: "", birthTime: "", downloadLink: "", type: "" }
@@ -164,7 +164,7 @@ function processData (files) {
                 buffer.name = item 
                 buffer.birthTime = (new Date(stats.birthtimeMs).toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })).slice(5)
                 buffer.size = await convertBytes(stats.size, true)
-                buffer.downloadLink = public_ip + "/api/download?file=" + encodeURI(item)
+                buffer.downloadLink = "/api/download?file=" + encodeURI(item)
                 buffer.type = item.substring(item.lastIndexOf(".") + 1, item.length)
                 data.files[fileCounter] = buffer
                 buffer = { name: "", size: "", birthTime: "", downloadLink: "", type: "" }

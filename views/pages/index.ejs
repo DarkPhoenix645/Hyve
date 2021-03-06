@@ -76,13 +76,44 @@
 
 <script src="/public/assets/js/toast.js"></script>
 <script>
+    setTimeout(() => {runOnLoad()}, 100)
     const username = getCookie("name")
-
-    if (username) {
-        document.getElementById('name').innerText = username
-        document.getElementById('profile').setAttribute('src', `/public/users/${username}.jpg`)
-        setTimeout(function(){toast(`Welcome To Hyve, ${username}`, true, "success")}, 1500)
-    } else { window.location.replace('/login') }
+    async function runOnLoad () {
+        if (username) {
+            const req = new XMLHttpRequest
+            req.open('GET', '/username')
+            req.send()
+            req.onreadystatechange = () => {
+                if (req.readyState == 4 && req.status == 200) {
+                    const response = req.responseText
+                    if (response === getCookie("name")) {
+                        document.getElementById('name').innerText = username
+                        document.getElementById('profile').setAttribute('src', `/public/users/${username}.jpg`)
+                        if (getCookie("hasVisited")) {
+                            setTimeout(function(){toast(`Welcome Back, ${username}!`, true, "success")}, 1500)
+                        } else {
+                            setTimeout(function(){toast(`Welcome To Hyve, ${username}!`, true, "success")}, 1500)
+                            document.cookie = "hasVisited=true"
+                        }
+                    } else {
+                        document.cookie = `name=${response}`
+                        document.location.replace('/')
+                    }
+                }
+            }
+        } else { 
+            const req = new XMLHttpRequest
+            req.open('GET', '/username')
+            req.send()
+            req.onreadystatechange = () => {
+                if (req.readyState == 4 && req.status == 200) {
+                    const response = req.responseText
+                    document.cookie = `name=${response}`
+                    document.location.replace('/')
+                }
+            }
+        }
+    }
 
     function getCookie(input) {
         cookies = document.cookie.split("; ")
