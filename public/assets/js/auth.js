@@ -50,7 +50,8 @@ sign_up_form.addEventListener('submit', async (e) => {
     const username = sign_up_form.username.value
     const email = sign_up_form.email.value
     const password = sign_up_form.password.value
-    const data = { username, email, password }  
+    const invite = parseInt(sign_up_form.invite.value)
+    const data = { username, email, password, invite }  
     console.log(data)
 
     try {

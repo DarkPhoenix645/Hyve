@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { checkUser } = require('./authChecker');
 const User = require('./User');
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -57,17 +58,20 @@ function login_get (req, res) {
 }
 
 async function signup_post (req, res) {
-    const { username, email, password } = req.body
-
-    try {
-        const user = await User.create({ username, email, password });
-        const token = createToken(user._id)
-        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 }) 
-        res.cookie('name', username, { maxAge: maxAge * 1000 }) 
-        res.status(201).json({ user: user._id });
-    } catch (err) {
-        const errors = errorHandler(err)
-        res.status(400).json({ errors : errors })
+    const { username, email, password, invite } = req.body
+    if (req.body.invite === 65535) {
+        try {
+            const user = await User.create({ username, email, password });
+            const token = createToken(user._id)
+            res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 }) 
+            res.cookie('name', username, { maxAge: maxAge * 1000 }) 
+            res.status(201).json({ user: user._id });
+        } catch (err) {
+            const errors = errorHandler(err)
+            res.status(400).json({ errors : errors })
+        }
+    } else {
+        res.status(400).json({ errors : { username: "", email: "", password: "Invalid invite code" } })
     }
 
 }
@@ -92,4 +96,24 @@ async function login_post (req, res) {
     }
 }
 
-module.exports = { signup_get, signup_post, login_get, login_post, logout_get }
+function get_username (req, res) {
+    const token = req.cookies.jwt
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+            if (err) { 
+                res.cookie('jwt', '', { maxAge: 1 })
+                res.cookie('name', '', { maxAge: 1 })
+                res.cookie('hasVisited', '', { maxAge: 1 })
+                res.redirect('/')
+            } 
+            else {
+                let user = await User.findById(decodedToken.id)
+                res.status(200).send(user.username)
+            }
+        })
+    } else { 
+        res.status(400)
+    }
+}
+
+module.exports = { signup_get, signup_post, login_get, login_post, logout_get, get_username }
