@@ -6,3 +6,4 @@ typings/
 data/
 *.log
 secret.json
+keys/

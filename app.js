@@ -3,6 +3,8 @@ const express = require('express');
 const compression = require('compression');
 const cookies = require('cookie-parser');
 const mongoose = require('mongoose');
+const spdy = require('spdy');
+const { readFileSync } = require('fs')
 
 // Server Routes
 const routes = require('./routes/index.js');
@@ -12,6 +14,7 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const port = process.env.PORT;
+const securePort = process.env.SECURE_PORT;
 
 app.use('/public', express.static(__dirname + '/public'));
 app.use(compression());
@@ -43,5 +46,18 @@ functions.serverLogging();
 app.get('*', function(req, res, next) {
   req.accepts('html') ? res.status(404).render("pages/404.ejs") : res.status(404).json({ error: "File not found" })
 })
+
+// HTTP/2 Stuff and Port Listeners
+const options = {
+  key: readFileSync('./keys/server.key'),
+  cert: readFileSync('./keys/server.crt')
+}
+
+spdy
+  .createServer(options, app)
+  .listen(securePort, (error) => {
+    if (error) { console.log(error) }
+    console.log(`Server running on ${securePort}`)
+  })
 
 app.listen(port);
