@@ -32,11 +32,27 @@ module.exports = function(app) {
             if (query.includes("..;..") === true) {
                 var folders = query.replace(/..;..|%20/g, '" "')
                 var outputZip = await functions.zip(folders, Date.now())
-                outputZip === "Error!" ? res.status(500).send("Error!") : res.status(200).download(outputZip)
+                if (outputZip === "Error!") { res.status(500).send("Error!") }
+                res.status(200).download(outputZip, (err) => {
+                    if (err) {
+                        console.log(err)
+                        return
+                    }
+                    fs.unlinkSync(outputZip)
+                    res.end()
+                })
             } else {
                 if (fs.existsSync(process.env.UPLOADS_DIR1 + query)) {
                     outputZip = await functions.zip(query, Date.now())
-                    outputZip === "Error!" ? res.status(500).send("An error occurred while zipping the folder!") : res.status(200).download(outputZip)
+                    if (outputZip === "Error!") { res.status(500).send("Error!") }
+                    res.status(200).download(outputZip, (err) => {
+                        if (err) {
+                            console.log(err)
+                            return
+                        }
+                        fs.unlinkSync(outputZip)
+                        res.end()
+                    })
                 } else { res.status(404).send("Folder not found!") }
             }
         }
@@ -94,10 +110,13 @@ module.exports = function(app) {
         }
     });
 
-    app.get('/api/listFiles', requireAuth, async(req, res) => {
-        var files = await fs.readdirSync(process.env.UPLOADS_DIR1)
-        var output = await functions.processData(files)
-        res.json(output)
+    app.get('/api/listFiles', requireAuth, (req, res) => {
+        var files = fs.readdirSync(process.env.UPLOADS_DIR1)
+        async function middle (files) {
+            var output = await functions.processData(files)
+            res.json(output)
+        }
+        files.length === 0 ? res.send("No files found!") : middle(files)
     })
       
     app.get("/data", requireAuth, async(req, res) => {

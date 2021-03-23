@@ -1,23 +1,28 @@
-var table = document.getElementById('serverResponse');
-var thead = document.createElement('thead')
-var tbody = document.createElement('tbody')
-var tr = document.createElement('tr')
-var icon = document.createElement('th')
-var fileName = document.createElement('th')
-var size = document.createElement('th')
-var lastModified = document.createElement('th')
-var textName = document.createTextNode("Name")
-var textSize = document.createTextNode("Size")
-var textLastModified = document.createTextNode("Last Modified")
-fileName.appendChild(textName)
-size.appendChild(textSize)
-lastModified.appendChild(textLastModified)
-tr.appendChild(icon)
-tr.appendChild(fileName)
-tr.appendChild(size)
-tr.appendChild(lastModified)
-thead.appendChild(tr)
-table.appendChild(thead)
+var table, thead, tbody, tr, icon, fileName, size, lastModified, textName, textSize, textLastModified;
+
+function generateTableTemplate () {
+    table = document.getElementById('serverResponse');
+    thead = document.createElement('thead')
+    tbody = document.createElement('tbody')
+    tr = document.createElement('tr')
+    icon = document.createElement('th')
+    fileName = document.createElement('th')
+    size = document.createElement('th')
+    lastModified = document.createElement('th')
+    textName = document.createTextNode("Name")
+    textSize = document.createTextNode("Size")
+    textLastModified = document.createTextNode("Last Modified")
+    fileName.appendChild(textName)
+    size.appendChild(textSize)
+    lastModified.appendChild(textLastModified)
+    tr.appendChild(icon)
+    tr.appendChild(fileName)
+    tr.appendChild(size)
+    tr.appendChild(lastModified)
+    thead.appendChild(tr)
+    table.appendChild(thead)
+}
+
 var counter = 0
 
 var xhttp = new XMLHttpRequest
@@ -25,14 +30,20 @@ xhttp.open("GET", "/api/listFiles")
 xhttp.send()
 xhttp.onreadystatechange = function() {
     if (this.readyState == 4) {
-        response = JSON.parse(this.responseText)
-        var totalFiles = response.totalFiles
-        var totalFolders = response.totalFolders
-        for (i = 1; i <= totalFiles; i++) { generator(i, false) }
-        for (i = 1; i <= totalFolders; i++) { generator(i, true) }
-        table.appendChild(tbody)
-        console.log(table)
-        document.getElementById("json").innerHTML += `\n${JSON.stringify(response, null, 2)}`
+        response = this.responseText
+        if(response === "No files found!") {
+            document.getElementById('emptyResponse').innerText = response
+            document.getElementById("rawButton").classList.add('hidden')
+        } else {
+            response = JSON.parse(response)
+            generateTableTemplate()
+            var { totalFiles, totalFolders } = response
+            for (i = 1; i <= totalFiles; i++) { generator(i, false) }
+            for (i = 1; i <= totalFolders; i++) { generator(i, true) }
+            table.appendChild(tbody)
+            console.log(table)
+            document.getElementById("json").innerHTML += `\n${JSON.stringify(response, null, 2)}`
+        }
 }}
 
 function download(link) {
