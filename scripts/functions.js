@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 const fs = require('fs');
-const port = process.env.PORT;
 const functions = require("./admin_data")
+const port = process.env.PORT;
 var memArr = []
 var public_ip = ""
 var local_ip = ""
@@ -118,10 +118,11 @@ function manageUploads (subDir, files) {
 
 async function zip (files, date) {
     return new Promise((resolve) => {
-        exec(`cd uploads && zip "${process.env.DOWNLOADS_DIR}Hyve-${date}.zip" "${files}" -r`, (error, stdout, stderr) => {
+        const name = `${process.env.DOWNLOADS_DIR}Hyve-${date}.zip`
+        exec(`cd "${process.env.UPLOADS_DIR1}" && zip "${name}" "${files}" -r`, (error, stdout, stderr) => {
             if (error) { resolve("Error!") }
-            else if (stderr) { resolve("Error!") }
-            else if (stdout) { resolve(`${process.env.DOWNLOADS_DIR}${date}.zip`); }
+            else if (stderr) { console.log(stderr), resolve("Error!") }
+            resolve(name);
         })
     })
 }
@@ -148,7 +149,7 @@ function processData (files) {
     var buffer = { name: "", size: "", birthTime: "", downloadLink: "", type: "" }
     var fileCounter = 0
     var dirCounter = 0
-    files.forEach((item, index) => {
+    files.forEach((item) => {
         fs.stat(process.env.UPLOADS_DIR1 +  item, async function(err, stats) {
             if (stats.isFile() === false) {
                 dirCounter += 1
