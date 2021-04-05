@@ -4,7 +4,6 @@
 */
 
 (function($) {
-
 	var	$window = $(window),
 		$body = $('body');
 
@@ -26,7 +25,7 @@
 		});
 
 	// Touch?
-		if (browser.mobile)
+		if (browser.mobile) 
 			$body.addClass('is-touch');
 
 	// Forms.

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/public/assets/css/auth.css" defer />
-    <script src="/public/assets/js/kit.js" crossorigin="anonymous" defer></script>
+    <script src="/public/assets/js/kit.js" defer></script>
     <link rel="shortcut icon" type="image/x-icon" href="/public/images/logo.jpg" />
     <title>Sign into your Hyve account</title>
   </head>
@@ -31,7 +31,6 @@
               </a>
               <a href="#" class="social-icon">
                 <i class="fab fa-google"></i>
-              </a>
               </a>
             </div>
           </form>
@@ -97,8 +96,11 @@
       </div>
     </div>
  
+    <script src="/public/assets/js/jquery.min.js" defer></script>
+    <script src="/public/assets/js/browser.min.js" defer></script>
     <script src="/public/assets/js/toast.js" defer></script>
     <script src="/public/assets/js/auth.js" defer></script>
+    <script src="/public/assets/js/preprocess.js" defer></script>
     <script>
         var action = '<%= action %>' 
         if (action === 'signup') {

@@ -3,8 +3,6 @@ const fs = require('fs');
 const functions = require("./admin_data")
 const port = process.env.PORT;
 var memArr = []
-var public_ip = ""
-var local_ip = ""
 
 function convert(fileName) {
     var file = fileName
@@ -19,6 +17,9 @@ function convert(fileName) {
 }
 
 function ip() {
+    var public_ip = ""
+    var local_ip = ""
+
     return new Promise(resolve => {
         var arr = []
         exec(process.env.SERVER_LOG_LOCAL_IP, (error, stdout, stderr) => {
@@ -119,7 +120,7 @@ function manageUploads (subDir, files) {
 async function zip (files, date) {
     return new Promise((resolve) => {
         const name = `${process.env.DOWNLOADS_DIR}Hyve-${date}.zip`
-        exec(`cd "${process.env.UPLOADS_DIR1}" && zip "${name}" "${files}" -r`, (error, stdout, stderr) => {
+        exec(`cd "${process.env.UPLOADS_DIR1}" && zip "${name}" "${files}" -r`, (error, _, stderr) => {
             if (error) { resolve("Error!") }
             else if (stderr) { console.log(stderr), resolve("Error!") }
             resolve(name);

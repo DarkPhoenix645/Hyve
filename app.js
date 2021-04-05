@@ -33,17 +33,11 @@ app.use(function(req, res, next) {
     next()
 })
 
-// Connecting to database
-const dbURI = process.env.DATABASE_LOGIN;
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true })
-  .then((result) => console.log("Connected to database"))
-  .catch((err) => console.log(err));
-
 routes(app);
 printRoutes(app)
 functions.serverLogging();
 
-app.get('*', function(req, res, next) {
+app.get('*', function(req, res) {
   req.accepts('html') ? res.status(404).render("pages/404.ejs") : res.status(404).json({ error: "File not found" })
 })
 
@@ -59,5 +53,11 @@ spdy
     if (error) { console.log(error) }
     console.log(`Server running on ${securePort}`)
   })
+
+// Connecting to database
+const dbURI = process.env.DATABASE_LOGIN;
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true })
+  .then(() => console.log("Connected to database"))
+  .catch((err) => console.log(err));
 
 app.listen(port);
