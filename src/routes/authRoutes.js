@@ -1,5 +1,5 @@
-const { Router } = require('express');
-const functions = require('../scripts/authController')
+import { Router } from "express";
+import functions from "../scripts/authController";
 const router = Router()
 
 router.get('/signup', (req, res) => { functions.signup_get(req, res) })

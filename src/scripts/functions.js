@@ -1,6 +1,6 @@
-const { exec } = require('child_process');
-const fs = require('fs');
-const functions = require("./admin_data")
+import { exec } from "child_process";
+import fs from "fs";
+import functions from "./admin_data";
 const port = process.env.PORT;
 var memArr = []
 

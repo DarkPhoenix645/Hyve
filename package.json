@@ -4,8 +4,9 @@
   "description": "My First Full Stack Production Ready Website",
   "main": "app.js",
   "scripts": {
-    "production": "pm2 start secret.json",
-    "init": "pm2-dev start secret.json --ignore 'data'"
+    "production": "env NODE_ENVIRONMENT=production pm2 start secret_ecosystem.config.js",
+    "init": "env NODE_ENVIRONMENT=development pm2-dev start secret_ecosystem.config.js --ignore 'data'",
+    "build": "babel src -d dist --copy-files"
   },
   "repository": "https://github.com/DarkPhoenix645/Hyve",
   "author": "Nilanjan Mitra",
@@ -22,5 +23,15 @@
     "mongoose": "^5.11.15",
     "spdy": "^4.0.2",
     "validator": "^13.5.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/node": "^7.10.5",
+    "@babel/plugin-transform-runtime": "^7.11.5",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/runtime": "^7.11.2",
+    "babel-plugin-inline-import": "^3.0.0",
+    "babel-plugin-transform-async-to-module-method": "^6.24.1"
   }
 }

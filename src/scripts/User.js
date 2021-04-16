@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const { isEmail } = require('validator')
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import { isEmail } from "validator";
 
 const userSchema = new mongoose.Schema({
     username: {

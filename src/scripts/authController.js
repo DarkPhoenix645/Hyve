@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const { checkUser } = require('./authChecker');
-const User = require('./User');
+import jwt from "jsonwebtoken";
+import { checkUser } from "./authChecker";
+import User from "./User";
 const maxAge = 3 * 24 * 60 * 60;
 
 function errorHandler(err) {

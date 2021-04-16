@@ -1,5 +1,5 @@
-const functions = require("../scripts/functions")
-const { requireAuth, checkUser } = require('../scripts/authChecker')
+import functions from "../scripts/functions";
+import { requireAuth, checkUser } from "../scripts/authChecker";
 
 module.exports = function(app) {
     app.get('*', checkUser)

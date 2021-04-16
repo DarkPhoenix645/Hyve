@@ -1,6 +1,5 @@
-const { exec } = require('child_process')
-const cpuStat = require('./cpu')
-const os = require('os')
+import { exec } from "child_process";
+import cpuStat from "./cpu";
 var coreCount = cpuStat.totalCores()
 var memArr = []
 

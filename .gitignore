@@ -1,9 +1,9 @@
 node_modules/
-typings/
 .npm
 *.tgz
 .env
 data/
 *.log
-secret.json
+secret_ecosystem.config.js
 keys/
+dist/

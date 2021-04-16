@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const User = require('./User')
+import jwt from "jsonwebtoken";
+import User from "./User";
 
 function requireAuth(req, res, next) {
     const token = req.cookies.jwt

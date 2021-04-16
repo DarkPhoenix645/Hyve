@@ -1,7 +1,7 @@
-const functions = require("../scripts/functions");
-const formidable = require("formidable");
-const { requireAuth } = require('../scripts/authChecker')
-const fs = require("fs");
+import functions from "../scripts/functions";
+import formidable from "formidable";
+import { requireAuth } from "../scripts/authChecker";
+import fs from "fs";
 
 module.exports = function(app) {
     app.post('/printFile', requireAuth, (req, res) => { 
