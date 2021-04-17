@@ -8,34 +8,21 @@ import { readFileSync } from "fs";
 
 // Server Routes
 import routes from "./routes/index.js";
-import printRoutes from "./routes/printRoutes";
 import functions from "./scripts/functions";
-import authRoutes from "./routes/authRoutes";
 
 const app = express();
 const port = process.env.PORT;
 const securePort = process.env.SECURE_PORT;
 
-app.use('/public', express.static(__dirname + '/public'));
 app.use(compression());
 app.use(cookies());
 app.use(express.json());
-app.use(authRoutes);
+app.use(routes);
+app.use('/public', express.static(__dirname + '/public'));
+
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
-// Request Logging
-app.use(function(req, res, next) {
-    var dt = Date()
-    var ip = req.ip.includes("::1") ? req.ip.replace(/::1/, "localhost") : req.ip.replace(/::ffff:192.168./, "(Local Client) 192.168.")
-    var d = dt.slice(4, 15).replace(/ /g, "/")
-    var t = dt.slice(16, 24)
-    console.log(`${req.method} request from ${ip} for URL ${req.url} at ${t} on ${d}`) 
-    next()
-});
-
-routes(app);
-printRoutes(app)
 functions.serverLogging();
 
 app.get('*', function(req, res) {

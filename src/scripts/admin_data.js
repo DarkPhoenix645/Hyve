@@ -10,14 +10,14 @@ function getCoreUsage(i) {
             cpuStat.usagePercent({coreIndex: i,sampleMs: 250,},
             async function(err, percent, seconds) {
                 if (err) {resolve(console.log(err))}
-                x = await percent
+                var x = await percent
                 resolve("Core 1: " + x.toFixed(2) + "%");
             });
         } else {
             cpuStat.usagePercent({coreIndex: i,sampleMs: 250,},
                 async function(err, percent, seconds) {
                     if (err) {resolve(console.log(err))}
-                    x = await percent
+                    var x = await percent
                     resolve(x);
             });
         }
@@ -52,9 +52,9 @@ module.exports = {
 
     singleCore: () => {
         return new Promise(async(resolve) => {
-            for (i=0; i <= coreCount; i++) {
-                if (i < coreCount) {core = await getCoreUsage(i), memArr.push(core)}
-                else if (i === coreCount) {resolve(memArr), memArr = []}
+            for (let i = 0; i <= coreCount; i++) {
+                if (i < coreCount) {var core = await getCoreUsage(i); memArr.push(core);}
+                else if (i === coreCount) {resolve(memArr); memArr = [];}
             }
         })
     },
