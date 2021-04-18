@@ -1,5 +1,6 @@
-import functions from "../scripts/functions";
-import { requireAuth } from "../scripts/authChecker";
+import functions from "../scripts/printFunctions/printFunctions";
+import { requireAuth } from "../scripts/authFunctions/authChecker";
+import printData from "../scripts/printFunctions/printDataController";
 import { Router } from "express";
 const router = new Router();
 
@@ -25,4 +26,9 @@ router.get('/currentJobs', requireAuth, async (req, res) => {
     res.status(200).send(currentJobs);
 });
 
-module.exports = router;
+router.get('/printSettings', requireAuth, (req, res) => { printData.get(req, res); });
+router.post('/printSettingsCreate', requireAuth, (req, res) => { printData.create(req, res); });
+router.post('/printSettingsUpdate', requireAuth, (req, res) => { printData.update(req, res); });
+router.post('/printSettingsReset', requireAuth, (req, res) => { printData.reset(req, res); });
+
+export default router;

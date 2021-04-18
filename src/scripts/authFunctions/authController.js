@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { checkUser } from "./authChecker";
 import User from "./User";
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -40,7 +39,7 @@ function createToken(id) {
 function signup_get (req, res) {
     const token = req.cookies.jwt
     if (token) {
-        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, _) => {
             if (err) { res.render('pages/auth', { action: "signup" }) } 
             else { res.redirect('/') }
         })
@@ -50,7 +49,7 @@ function signup_get (req, res) {
 function login_get (req, res) {
     const token = req.cookies.jwt
     if (token) {
-        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, _) => {
             if (err) { res.render('pages/auth', { action: "login" }) } 
             else { res.redirect('/') }
         })
@@ -59,7 +58,7 @@ function login_get (req, res) {
 
 async function signup_post (req, res) {
     const { username, email, password, invite } = req.body
-    if (req.body.invite === 65535) {
+    if (invite === 65535) {
         try {
             const user = await User.create({ username, email, password });
             const token = createToken(user._id)
@@ -76,7 +75,7 @@ async function signup_post (req, res) {
 
 }
 
-function logout_get (req, res) {
+function logout_get (_, res) {
     res.cookie('jwt', '', { maxAge: 1 })
     res.cookie('name', '', { maxAge: 1 })
     res.redirect('/')
@@ -91,7 +90,7 @@ async function login_post (req, res) {
         res.cookie('name', user.username, { maxAge: maxAge * 1000 }) 
         res.status(200).json({ user: user._id })
     } catch (err) {
-        const errors = await errorHandler(err)
+        const errors = errorHandler(err)
         res.status(400).json({ errors })
     }
 }
@@ -116,4 +115,11 @@ function get_username (req, res) {
     }
 }
 
-module.exports = { signup_get, signup_post, login_get, login_post, logout_get, get_username }
+export default {
+    signup_get,
+    signup_post,
+    login_get,
+    login_post,
+    logout_get,
+    get_username
+}

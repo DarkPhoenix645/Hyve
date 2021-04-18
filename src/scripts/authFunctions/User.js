@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { isEmail } from "validator";
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: [true, "Please enter a username"],
@@ -22,13 +22,13 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function(next) {
     const salt = await bcrypt.genSalt()
     this.password = await bcrypt.hash(this.password, salt)
     next()
 })
 
-userSchema.statics.login = async function (email, password) {
+UserSchema.statics.login = async function (email, password) {
     const user = await this.findOne({ email })
     if (user) {
         const auth = await bcrypt.compare(password, user.password)
@@ -40,6 +40,6 @@ userSchema.statics.login = async function (email, password) {
     throw Error("The provided email either doesn't exist or is incorrect")
 }
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('user', UserSchema);
 
-module.exports = User;
+export default User;

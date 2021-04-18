@@ -1,8 +1,8 @@
-import formidable from "formidable";
-import functions from "../scripts/functions";
-import fs from "fs";
-import { requireAuth } from "../scripts/authChecker";
-import { Router } from "express";
+import { Router } from 'express';
+import formidable from 'formidable';
+import fs from 'fs';
+import functions from '../scripts/mediaFunctions/mediaFunctions';
+import { requireAuth } from '../scripts/authFunctions/authChecker';
 const router = new Router();
 
 router.get('/api/download', requireAuth, async(req, res) => {
@@ -11,7 +11,7 @@ router.get('/api/download', requireAuth, async(req, res) => {
         if (query.includes("..;..") === true) {
             var folders = query.replace(/..;..|%20/g, '" "')
             var outputZip = await functions.zip(folders, Date.now())
-            if (outputZip === "Error!") { res.status(500).send("Error!") }
+            if (outputZip === 'Error!') { res.status(500).send('Error!') }
             res.status(200).download(outputZip, (err) => {
                 if (err) {
                     console.log(err)
@@ -23,7 +23,7 @@ router.get('/api/download', requireAuth, async(req, res) => {
         } else {
             if (fs.existsSync(process.env.UPLOADS_DIR1 + query)) {
                 outputZip = await functions.zip(query, Date.now())
-                if (outputZip === "Error!") { res.status(500).send("Error!") }
+                if (outputZip === 'Error!') { res.status(500).send('Error!') }
                 res.status(200).download(outputZip, (err) => {
                     if (err) {
                         console.log(err)
@@ -32,7 +32,7 @@ router.get('/api/download', requireAuth, async(req, res) => {
                     fs.unlinkSync(outputZip)
                     res.end()
                 })
-            } else { res.status(404).send("Folder not found!") }
+            } else { res.status(404).send('Folder not found!') }
         }
     }
     else if (req.query.file) {
@@ -40,17 +40,17 @@ router.get('/api/download', requireAuth, async(req, res) => {
         if (req.query.file.includes("..;..") === true) {
             var files = query.replace(/..;..|%20/g, '" "')
             var outputZip = await functions.zip(files, Date.now())
-            outputZip === "Error!" ? res.status(500).send("Error!") : res.status(200).download(outputZip)
+            outputZip === 'Error!' ? res.status(500).send('Error!') : res.status(200).download(outputZip)
         } else {
             fs.existsSync(process.env.UPLOADS_DIR1 + query) === true ? 
                 res.status(200).download(process.env.UPLOADS_DIR1 + query) : 
-                res.status(404).send("File not found!")
+                res.status(404).send('File not found!')
         }
     }
 });
 
 router.post('/api/upload', requireAuth, async function(req, res){
-    if (req.query.type === "folder") {
+    if (req.query.type === 'folder') {
         var form = new formidable.IncomingForm();
         var subDir = []
         var files = []
@@ -71,7 +71,7 @@ router.post('/api/upload', requireAuth, async function(req, res){
         });
         form.parse(req);
     } 
-    else if (req.query.type === "file") {
+    else if (req.query.type === 'file') {
         var form = new formidable.IncomingForm();
         form.maxFileSize = 10000 * 1024 * 1024
         form.multiples = true;
@@ -95,7 +95,7 @@ router.get('/api/listFiles', requireAuth, (req, res) => {
         var output = await functions.processData(files)
         res.json(output)
     }
-    files.length === 0 ? res.send("No files found!") : middle(files)
+    files.length === 0 ? res.send('No files found!') : middle(files)
 });
 
-module.exports = router;
+export default router;

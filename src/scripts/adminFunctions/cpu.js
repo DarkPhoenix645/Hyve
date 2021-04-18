@@ -1,13 +1,5 @@
 import os from "os";
 
-module.exports = {
-  usagePercent: usagePercent,
-  totalCores: totalCores,
-  clockMHz: clockMHz,
-  avgClockMHz: avgClockMHz,
-};
-
-
 function usagePercent(opts, cb) {
   //declarations
   var cpus = os.cpus();
@@ -147,3 +139,10 @@ function _error(coreIndex, cores) {
   var errMsg = 'Error: Core "' + coreIndex + '" not found, use one of ' + '[0, ' + (cores - 1) + '], ' + 'Your system only has ' + cores + ' cores.';
   console.log(errMsg);
 }
+
+export default {
+  usagePercent,
+  totalCores,
+  clockMHz,
+  avgClockMHz
+};

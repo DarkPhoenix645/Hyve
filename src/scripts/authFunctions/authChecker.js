@@ -4,7 +4,7 @@ import User from "./User";
 function requireAuth(req, res, next) {
     const token = req.cookies.jwt
     if (token) {
-        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, _) => {
             if (err) { res.redirect('/login') } 
             else { next() }
         })
@@ -31,4 +31,4 @@ function checkUser(req, res, next) {
      }
 }
 
-module.exports = { requireAuth, checkUser };
+export { requireAuth, checkUser };
