@@ -1,52 +1,86 @@
 import { Router } from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
-import functions from '../scripts/mediaFunctions/mediaFunctions';
-import { requireAuth } from '../scripts/authFunctions/authChecker';
+import functions from '../scripts/media/mediaFunctions';
+import { requireAuth } from '../scripts/auth/authChecker';
 const router = new Router();
 
 router.get('/api/download', requireAuth, async(req, res) => {
-    if (req.query.folder) {
-        var query = req.query.folder
-        if (query.includes("..;..") === true) {
-            var folders = query.replace(/..;..|%20/g, '" "')
-            var outputZip = await functions.zip(folders, Date.now())
-            if (outputZip === 'Error!') { res.status(500).send('Error!') }
-            res.status(200).download(outputZip, (err) => {
-                if (err) {
-                    console.log(err)
-                    return
-                }
-                fs.unlinkSync(outputZip)
-                res.end()
-            })
-        } else {
-            if (fs.existsSync(process.env.UPLOADS_DIR1 + query)) {
-                outputZip = await functions.zip(query, Date.now())
-                if (outputZip === 'Error!') { res.status(500).send('Error!') }
-                res.status(200).download(outputZip, (err) => {
-                    if (err) {
-                        console.log(err)
-                        return
-                    }
-                    fs.unlinkSync(outputZip)
-                    res.end()
-                })
-            } else { res.status(404).send('Folder not found!') }
-        }
+    
+    // Only folders prop present in body object
+    if (req.body['folders'] && !req.body['files']) {
+        const folders = req.body['folders'];
+
+        if (folders.length >= 1) {
+            for (const folder of folders) {
+                if (!fs.existsSync(process.env.UPLOADS_DIR1 + folder)) { res.status(404).send(`Folder ${folder} not found!`); return; };
+            };
+
+            try {
+                const outputZip = await functions.zip(folders, Date.now());
+                res.status(200).download(outputZip, () => {
+                    fs.unlinkSync(outputZip);
+                    res.end();
+                });
+            } catch (err) {
+                res.status(500).send('An unexpected error occurred!');
+                console.log(err);
+            };
+        } else { res.status(400).send('No files requested!'); };
+
     }
-    else if (req.query.file) {
-        var query = req.query.file
-        if (req.query.file.includes("..;..") === true) {
-            var files = query.replace(/..;..|%20/g, '" "')
-            var outputZip = await functions.zip(files, Date.now())
-            outputZip === 'Error!' ? res.status(500).send('Error!') : res.status(200).download(outputZip)
-        } else {
-            fs.existsSync(process.env.UPLOADS_DIR1 + query) === true ? 
-                res.status(200).download(process.env.UPLOADS_DIR1 + query) : 
-                res.status(404).send('File not found!')
-        }
-    }
+
+    // Only files prop present in body object
+    else if (req.body['files'] && !req.body['folders']) {
+        const files = req.body['files'];
+        
+        if (files.length === 1) {
+            res.status(200).download(process.env.UPLOADS_DIR1 + files[0])
+        } else if (files.length > 1) {
+            for (const file of files) {
+                if (!fs.existsSync(process.env.UPLOADS_DIR1 + file)) { res.status(404).send(`File ${file} not found!`); return; };
+            };
+    
+            try {
+                const outputZip = await functions.zip(files, Date.now());
+                res.status(200).download(outputZip, () => {
+                    fs.unlinkSync(outputZip);
+                    res.end();
+                });
+            } catch (err) {
+                res.status(500).send('An unexpected error occurred!');
+                console.log(err);
+            };
+        } else { res.status(400).send('No files requested!'); };
+    } 
+    
+    // Both folders and files props present in body object
+    else if (req.body['files'] && req.body['folders']) {
+        const files = req.body['files'];
+        const folders = req.body['folders'];
+
+        if (files.length >= 1 && folders.length >= 1) {
+            const items = [...files, ...folders];
+
+            for (const item of items) {
+                if (!fs.existsSync(process.env.UPLOADS_DIR1 + item)) { res.status(404).send(`File/Folder ${item} not found!`); return; };
+            };
+
+            try {
+                const outputZip = await functions.zip(items, Date.now());
+                res.status(200).download(outputZip, () => {
+                    fs.unlinkSync(outputZip);
+                    res.end();
+                });
+            } catch (err) {
+                res.status(500).send('An unexpected error occurred!');
+                console.log(err);
+            };
+        } else { res.status(400).send('No files/folders requested!'); };
+    } 
+    
+    // Neither folders nor files props present in body object i.e. essentially empty request
+    else { res.status(400).send('No files/folders requested!'); };
 });
 
 router.post('/api/upload', requireAuth, async function(req, res){
