@@ -1,6 +1,7 @@
 import { networkInterfaces } from 'os';
 import fs from 'fs';
 import http from 'http';
+import test from './media/mediaFunctions';
 const port = process.env.PORT;
 const securePort = process.env.SECURE_PORT;
 var ip_obj = {};
@@ -28,6 +29,7 @@ function convertBytes (input, humanReadable) {
 async function ip() {
     var public_ip = '';
     var local_ip = [];
+
     return new Promise(resolve => {
         try {
             for (const name of Object.keys(networkInterfaces())) {
@@ -75,9 +77,19 @@ async function serverLogging (arg) {
     };
 }
 
+function dateMsToHuman (date) {
+    const dt = Date(date);
+    const d = dt.slice(4, 15).replace(/ /g, "/");
+    const t = dt.slice(16, 24);
+    const offset = dt.slice(26, 33);
+
+    return { d, t, offset, dt };
+}
+
 export default {
     check,
     convertBytes,
     ip,
     serverLogging,
+    dateMsToHuman
 }

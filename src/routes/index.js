@@ -1,6 +1,6 @@
 import { Router } from "express";
 import helpers from "../scripts/helpers";
-import { requireAuth, checkUser } from "../scripts/authFunctions/authChecker";
+import { requireAuth, checkUser } from "../scripts/auth/authChecker";
 import printRoutes from "./printRoutes";
 import mediaRoutes from "./mediaRoutes";
 import adminRoutes from "./adminRoutes";

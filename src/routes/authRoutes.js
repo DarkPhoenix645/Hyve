@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { requireAuth } from '../scripts/authFunctions/authChecker';
-import functions from '../scripts/authFunctions/authController';
+import { requireAuth } from '../scripts/auth/authChecker';
+import functions from '../scripts/auth/authController';
 const router = Router();
 
 router.get('/signup', (req, res) => { functions.signup_get(req, res) });

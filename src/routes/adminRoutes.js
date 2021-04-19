@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import functions from '../scripts/adminFunctions/adminFunctions';
-import { requireAuth } from '../scripts/authFunctions/authChecker';
+import functions from '../scripts/admin/adminFunctions';
+import { requireAuth } from '../scripts/auth/authChecker';
 const router = new Router();
 
 router.get('/data', requireAuth, async(_, res) => {

@@ -1,6 +1,6 @@
-import functions from "../scripts/printFunctions/printFunctions";
-import { requireAuth } from "../scripts/authFunctions/authChecker";
-import printData from "../scripts/printFunctions/printDataController";
+import functions from "../scripts/print/printFunctions";
+import { requireAuth } from "../scripts/auth/authChecker";
+import printData from "../scripts/print/printDataController";
 import { Router } from "express";
 const router = new Router();
 

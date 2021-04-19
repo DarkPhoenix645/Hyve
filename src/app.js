@@ -29,6 +29,7 @@ const requestLogger = (req, _, next) => {
 
 app.use(requestLogger);
 
+console.log('Initialising...');
 helpers.ip()
   .then((res) => {
     if (res === 0) {
