@@ -12,8 +12,8 @@
   "author": "Nilanjan Mitra",
   "license": "MIT",
   "dependencies": {
-    "archiver": "^5.3.0",
-    "bcrypt": "^5.0.1",
+    "archiver": "^7.0.0",
+    "bcrypt": "^6.0.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "ejs": "^3.1.6",
